@@ -1,2 +1,2 @@
-# php2
-mvc cơ bản
+# run serveserve
+php -S localhost:8000
