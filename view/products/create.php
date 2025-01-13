@@ -13,4 +13,5 @@
         <input type="number" class="form-control" id="price" name="price" step="0.01" required>
     </div>
     <button type="submit" class="btn btn-success">Create</button>
+    <a href="/" class="btn btn-danger">Back to list</a>
 </form>

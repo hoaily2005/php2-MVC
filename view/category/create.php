@@ -15,4 +15,5 @@
         <?php endif; ?>
     </div>
     <button type="submit" class="btn btn-success">Create</button>
+    <a href="/" class="btn btn-danger">Back to list</a>
 </form>

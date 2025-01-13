@@ -1,12 +1,11 @@
 <?php
 require_once "view/helpers.php";
-require_once "controller/ProductController.php";
-
+require_once "model/ProductModel.php";
 class Controller
 {
     public function index()
     {
-        $productController = new ProductController();
-        $productController->indexHome();
+        $poroductController = new ProductController();
+        $poroductController->indexHome();
     }
 }

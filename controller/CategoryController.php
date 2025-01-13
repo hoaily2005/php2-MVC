@@ -13,12 +13,12 @@ class CategoryController
     public function index()
     {
         $categories = $this->categoryModel->getAllCategories();
-        renderView("view/category_list.php", compact('categories'), "Category List");
+        renderView("view/category/index.php", compact('categories'), "Category List");
     }
     public function show($id)
     {
         $category = $this->categoryModel->getCategoryById($id);
-        renderView("view/category_detail.php", compact('category'), "Category Detail");
+        renderView("view/category/show.php", compact('category'), "Category Detail");
     }
     public function create()
     {
@@ -32,13 +32,13 @@ class CategoryController
                 header("Location: /category");
                 exit;
             } else{
-                renderView("view/category_create.php", compact('errors','name', 'description'), "Create Category");
+                renderView("view/category/create.php", compact('errors','name', 'description'), "Create Category");
             }
 
             // $this->categoryModel->createCategory($name, $description);
             // header("Location: /category");
         } else {
-            renderView("view/category_create.php", [], "Create Category");
+            renderView("view/category/create.php", [], "Create Category");
         }
     }
     public function delete($id)
@@ -54,7 +54,7 @@ class CategoryController
             $errors=$this->validateCategory(['name'=>$name,'description'=>$description]);
 
             if(!empty($errors)){
-                renderView("view/category_edit.php", compact('errors'), "Edit Category");
+                renderView("view/category/edit.php", compact('errors'), "Edit Category");
             }else{
                 $this->categoryModel->updateCategory($id, $name, $description);
                 header("Location: /category");
@@ -64,7 +64,7 @@ class CategoryController
             header("Location: /category");
         } else {
             $category = $this->categoryModel->getCategoryById($id);
-            renderView("view/category_edit.php", compact('category'), "Edit Category");
+            renderView("view/category/edit.php", compact('category'), "Edit Category");
         }
     }
     private function validateCategory($category) {

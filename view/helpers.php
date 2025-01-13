@@ -1,6 +1,7 @@
 <?php
 
-function renderView($view, $data = [], $title = "My App") {
+function renderView($view, $data = [], $title = "My App")
+{
     // ra bien tu bang thanh don
     extract($data);
     ob_start();
@@ -8,4 +9,3 @@ function renderView($view, $data = [], $title = "My App") {
     $content = ob_get_clean();
     require "view/layouts/master.php";
 }
-?>
