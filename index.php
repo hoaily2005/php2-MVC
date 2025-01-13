@@ -30,6 +30,11 @@ $router->addRoute("/login", [$authController, "login"]);
 $router->addRoute("/register", [$authController, "register"]);
 $router->addRoute("/logout", [$authController, "logout"]);
 $router->addRoute("/", [$controller, "index"]);
+$router->addRoute("/login/google", [$authController, "redirectToGoogle"]);
+$router->addRoute("/auth/google-login", [$authController, "googleCallback"]);
+
+$router->addRoute("/forgot-password", [$authController, "forgotPassword"]);
+
 $router->addRoute("/unauthorized", [$authController, "unauthorized"]);
 
 $router->dispatch();
