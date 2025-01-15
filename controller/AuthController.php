@@ -15,9 +15,9 @@ class AuthController
         $this->UserModel = new UserModel();
 
         $this->googleClient = new Google_Client();
-        $this->googleClient->setClientId('636186213245-12d347dq5lcjee6p2m1a5d73lhv4tu9c.apps.googleusercontent.com');
-        $this->googleClient->setClientSecret('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');
-        $this->googleClient->setRedirectUri('http://localhost:8000/auth/google-login');
+        $this->googleClient->setClientId('NHAP-ID-CUA-BAN');
+        $this->googleClient->setClientSecret('NHAP-MA-CUA-BAN');
+        $this->googleClient->setRedirectUri('NHAP-LINK-CUA-BAN');
         $this->googleClient->addScope("email");
         $this->googleClient->addScope("profile");
     }
