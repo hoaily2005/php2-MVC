@@ -95,17 +95,7 @@
         </script>
         <?php unset($_SESSION['register_failed']); ?>
     <?php endif; ?>
-    <?php if (isset($_SESSION['register_success'])): ?>
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công!',
-                text: '<?php echo $_SESSION['register_success']; ?>',
-                confirmButtonText: 'OK'
-            });
-        </script>
-        <?php unset($_SESSION['register_success']); ?>
-    <?php endif; ?>
+    
 
     <?php if (isset($_SESSION['register_error'])): ?>
         <script>

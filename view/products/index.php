@@ -1,5 +1,6 @@
 <h1>Product List</h1>
 <a href="/products/create" class="btn btn-primary mb-3">Create Product</a>
+<a href="/products/add-skus" class="btn btn-primary mb-3">Add SKUs</a>
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>

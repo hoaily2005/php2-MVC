@@ -27,6 +27,12 @@
                         <li class="nav-item">
                             <a href="/category" class="nav-link text-white">Category</a>
                         </li>
+                        <li class = "nav-item">
+                            <a href="/sizes" class="nav-link text-white">Size</a>
+                        </li>
+                        <li class = "nav-item">
+                            <a href="/colors" class="nav-link text-white">Color</a>
+                        </li>
                         <li class="nav-item">
                             <a href="/users" class="nav-link text-white">User</a>
                         </li>

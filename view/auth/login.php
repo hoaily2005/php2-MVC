@@ -95,7 +95,18 @@
                 <p>Bạn chưa có tài khoản? <a href="/register">Đăng ký ngay</a></p>
             </div>
         </form>
-
+        <?php if (isset($_SESSION['reset_success'])): ?>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành Công!',
+                    text: '<?php echo $_SESSION['reset_success']; ?>',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+            <?php unset($_SESSION['reset_success']); ?>
+        <?php endif; ?>
+        
         <?php if (isset($_SESSION['login_failed'])): ?>
             <script>
                 Swal.fire({
@@ -107,4 +118,15 @@
             </script>
             <?php unset($_SESSION['login_failed']); ?>
         <?php endif; ?>
+        <?php if (isset($_SESSION['register_success'])): ?>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: '<?php echo $_SESSION['register_success']; ?>',
+                confirmButtonText: 'OK'
+            });
+        </script>
+        <?php unset($_SESSION['register_success']); ?>
+    <?php endif; ?>
     </div>

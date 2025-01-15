@@ -1,6 +1,9 @@
 # run serveserve
 php -S localhost:8000
 
+# cài composer Google 
+composer require google/apiclient
+
 # DATABASE
 CREATE TABLE `categories` (
   `id` int NOT NULL AUTO_INCREMENT,

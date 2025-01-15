@@ -12,29 +12,30 @@ class Mailer
     public function __construct()
     {
         $this->mail = new PHPMailer(true);
-        // Configure SMTP
+
         $this->mail->isSMTP();
         $this->mail->Host       = 'smtp.gmail.com';
         $this->mail->SMTPAuth   = true;
-        $this->mail->Username   = 'lyxuanhoai18@gmail.com'; // Your Gmail email
-        $this->mail->Password   = 'gfvdhmnezybhsbql';       // Your Gmail app password (make sure it's a secure app password)
+        $this->mail->Username   = 'lyxuanhoai18@gmail.com'; 
+        $this->mail->Password   = 'gfvdhmnezybhsbql';      
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mail->Port       = 587;
-        $this->mail->setFrom('lyxuanhoai18@gmail.com', 'ADMIN SHOP'); // Set the sender email
+        $this->mail->setFrom('lyxuanhoai18@gmail.com', 'ADMIN SHOP');
     }
 
     public function sendMail($to, $subject, $message)
     {
         try {
-            $this->mail->addAddress($to); // Recipient email
+            $this->mail->addAddress($to); 
             $this->mail->isHTML(true);
             $this->mail->Subject = $subject;
             $this->mail->Body    = $message;
+            
 
             if ($this->mail->send()) {
-                return ["status" => true, "message" => "✅ Email đã được gửi thành công!"];
+                return ["status" => true, "message" => "Email đã được gửi thành công!"];
             } else {
-                return ["status" => false, "message" => "❌ Gửi email thất bại: " . $this->mail->ErrorInfo];
+                return ["status" => false, "message" => "Gửi email thất bại: " . $this->mail->ErrorInfo];
             }
         } catch (Exception $e) {
             return ["status" => false, "message" => "Lỗi: " . $this->mail->ErrorInfo];
