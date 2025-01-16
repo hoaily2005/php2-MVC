@@ -27,6 +27,8 @@ class SizeController
             $errors = $this->validatesize(['name' => $name]);
             if(empty($errors)){
                 $this->sizeModel->createsize($name);
+                $_SESSION['success'] = "Thêm size thành công!";
+
                 header("Location: /sizes");
                 exit;
             } else{
@@ -42,6 +44,7 @@ class SizeController
     public function delete($id)
     {
         $this->sizeModel->deletesize($id);
+        $_SESSION['success'] = "Xóa size thành công";
         header("Location: /sizes");
     }
     public function edit($id)

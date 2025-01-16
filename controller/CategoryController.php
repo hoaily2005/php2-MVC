@@ -44,6 +44,7 @@ class CategoryController
     public function delete($id)
     {
         $this->categoryModel->deleteCategory($id);
+        $_SESSION['success'] = "Danh mục đã được xóa thành công!";
         header("Location: /category");
     }
     public function edit($id)

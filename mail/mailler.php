@@ -27,6 +27,7 @@ class Mailer
     {
         try {
             $this->mail->addAddress($to); 
+            $this->mail->CharSet = 'UTF-8'; 
             $this->mail->isHTML(true);
             $this->mail->Subject = $subject;
             $this->mail->Body    = $message;

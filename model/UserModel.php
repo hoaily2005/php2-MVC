@@ -164,4 +164,12 @@ class UserModel
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function updateRole($id, $role)
+    {
+        $query = "UPDATE users SET role = :role WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
 }

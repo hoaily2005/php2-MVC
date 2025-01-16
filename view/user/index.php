@@ -1,5 +1,4 @@
 <h1>User List</h1>
-<a href="/register/create" class="btn btn-primary mb-3">Create User</a>
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
@@ -25,3 +24,14 @@
         <?php endforeach; ?>
     </tbody>
 </table>
+<?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '<?= $_SESSION['success']; ?>',
+            confirmButtonText: 'OK'
+        });
+    </script>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>

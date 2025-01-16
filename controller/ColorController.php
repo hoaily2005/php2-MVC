@@ -27,6 +27,7 @@ class ColorController
             $errors = $this->validateColor(['name' => $name]);
             if(empty($errors)){
                 $this->colorModel->createColor($name);
+                $_SESSION['success'] = "Thêm color thành công!";
                 header("Location: /colors");
                 exit;
             } else{
@@ -42,6 +43,7 @@ class ColorController
     public function delete($id)
     {
         $this->colorModel->deleteColor($id);
+        $_SESSION['success'] = "Xóa color thành công";
         header("Location: /colors");
     }
     public function edit($id)

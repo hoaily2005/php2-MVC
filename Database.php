@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+require_once 'env.php';
 class Database {
     private $host = "127.0.0.1";
     private $db_name = "php2025";

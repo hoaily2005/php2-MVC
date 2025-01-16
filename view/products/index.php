@@ -26,4 +26,17 @@
         </tr>
         <?php endforeach; ?>
     </tbody>
+    
+    <?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '<?= $_SESSION['success']; ?>',
+            confirmButtonText: 'OK'
+        });
+    </script>
+    <?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
 </table>

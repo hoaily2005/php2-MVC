@@ -24,6 +24,10 @@ $router->addRoute("/products/create", [$productController, "create"], ['checkLog
 $router->addRoute("/products/edit/{id}", [$productController, "edit"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/products/delete/{id}", [$productController, "delete"], ['checkLogin', 'checkAdmin']);
 
+$router->addRoute("/users", [$authController, "indexUser"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/users/delete/{id}", [$authController, "delete"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/users/edit/{id}", [$authController, "editRole"], ['checkLogin', 'checkAdmin']);
+
 //category
 $router->addRoute("/category", [$categoryController, "index"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/category/create", [$categoryController, "create"], ['checkLogin', 'checkAdmin']);

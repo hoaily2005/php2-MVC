@@ -3,6 +3,7 @@ require_once "model/UserModel.php";
 require_once "mail/mailler.php";
 require_once "view/helpers.php";
 require_once "vendor/autoload.php";
+require_once 'env.php';
 
 
 class AuthController
@@ -15,9 +16,9 @@ class AuthController
         $this->UserModel = new UserModel();
 
         $this->googleClient = new Google_Client();
-        $this->googleClient->setClientId('NHAP-ID-CUA-BAN');
-        $this->googleClient->setClientSecret('NHAP-MA-CUA-BAN');
-        $this->googleClient->setRedirectUri('NHAP-LINK-CUA-BAN');
+        $this->googleClient->setClientId('636186213245-12d347dq5lcjee6p2m1a5d73lhv4tu9c.apps.googleusercontent.com');
+        $this->googleClient->setClientSecret('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');
+        $this->googleClient->setRedirectUri('http://localhost:8000/auth/google-login');
         $this->googleClient->addScope("email");
         $this->googleClient->addScope("profile");
     }
@@ -64,6 +65,7 @@ class AuthController
         header('Location: /');
         exit();
     }
+
     public function forgotPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -247,5 +249,72 @@ class AuthController
         session_destroy();
         header('Location: /login');
         exit();
+    }
+    public function indexUser()
+    {
+        $users = $this->UserModel->getAllUsers();
+        renderView("view/user/index.php", compact('users'), "User List");
+    }
+
+    public function show($id)
+    {
+        $user = $this->UserModel->getUserById($id);
+        renderView("view/user/show.php", compact('user'), "User Details");
+    }
+    public function delete($id)
+    {
+        $user = $this->UserModel->getUserById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "Người dùng không tồn tại!";
+            header("Location: /users");
+            exit;
+        }
+
+        if ($user['role'] === 'admin') {
+            $_SESSION['error'] = "Không thể xóa tài khoản quản trị viên!";
+            header("Location: /users");
+            exit;
+        }
+
+        if ($this->UserModel->deleteUser($id)) {
+            $_SESSION['success'] = "Xóa user thành công!";
+        } else {
+            $_SESSION['error'] = "Có lỗi xảy ra khi xóa user!";
+        }
+
+        header("Location: /users");
+        exit;
+    }
+    public function editRole($id)
+    {
+        $user = $this->UserModel->getUserById($id);
+
+        if (!$user) {
+            $_SESSION['error'] = "Người dùng không tồn tại!";
+            header("Location: /users");
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $role = $_POST['role'];
+
+            if (!in_array($role, ['user', 'admin'])) {
+                $_SESSION['error'] = "Vai trò không hợp lệ!";
+                header("Location: /user/edit/$id");
+                exit;
+            }
+
+            if ($this->UserModel->updateRole($id, $role)) {
+                $_SESSION['success'] = "Cập nhật vai trò thành công!";
+            } else {
+                $_SESSION['error'] = "Có lỗi xảy ra khi cập nhật!";
+            }
+
+            header("Location: /users");
+            exit;
+        }
+
+        renderView("view/user/edit.php", compact('user'), "Edit Role");
     }
 }
