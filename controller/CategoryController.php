@@ -13,12 +13,12 @@ class CategoryController
     public function index()
     {
         $categories = $this->categoryModel->getAllCategories();
-        renderView("view/category/index.php", compact('categories'), "Category List");
+        renderView("view/admin/category/index.php", compact('categories'), "Category List", 'admin');
     }
     public function show($id)
     {
         $category = $this->categoryModel->getCategoryById($id);
-        renderView("view/category/show.php", compact('category'), "Category Detail");
+        renderView("view/admin/category/show.php", compact('category'), "Category Detail", 'admin');
     }
     public function create()
     {
@@ -27,48 +27,46 @@ class CategoryController
             $description = $_POST['description'];
 
             $errors = $this->validateCategory(['name' => $name, 'description' => $description]);
-            if(empty($errors)){
+            if (empty($errors)) {
                 $this->categoryModel->createCategory($name, $description);
-                header("Location: /category");
+                header("Location: /admin/category");
                 exit;
-            } else{
-                renderView("view/category/create.php", compact('errors','name', 'description'), "Create Category");
+            } else {
+                renderView("view/admin/category/create.php", compact('errors', 'name', 'description'), "Create Category", 'admin');
             }
-
-            // $this->categoryModel->createCategory($name, $description);
-            // header("Location: /category");
         } else {
-            renderView("view/category/create.php", [], "Create Category");
+            renderView("view/admin/category/create.php", [], "Create Category", 'admin');
         }
     }
     public function delete($id)
     {
         $this->categoryModel->deleteCategory($id);
         $_SESSION['success'] = "Danh mục đã được xóa thành công!";
-        header("Location: /category");
+        header("Location: /admin/category");
     }
     public function edit($id)
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = $_POST['name'];
             $description = $_POST['description'];
-            $errors=$this->validateCategory(['name'=>$name,'description'=>$description]);
+            $errors = $this->validateCategory(['name' => $name, 'description' => $description]);
 
-            if(!empty($errors)){
-                renderView("view/category/edit.php", compact('errors'), "Edit Category");
-            }else{
+            if (!empty($errors)) {
+                renderView("view/admin/category/edit.php", compact('errors'), "Edit Category", 'admin');
+            } else {
                 $this->categoryModel->updateCategory($id, $name, $description);
-                header("Location: /category");
+                header("Location: /admin/category");
             }
 
             $this->categoryModel->updateCategory($id, $name, $description);
-            header("Location: /category");
+            header("Location: /admin/category");
         } else {
             $category = $this->categoryModel->getCategoryById($id);
-            renderView("view/category/edit.php", compact('category'), "Edit Category");
+            renderView("view/admin/category/edit.php", compact('category'), "Edit Category", 'admin');
         }
     }
-    private function validateCategory($category) {
+    private function validateCategory($category)
+    {
         $errors = [];
         if (empty($category['name'])) {
             $errors['name'] = "Vui lòng điền tên";

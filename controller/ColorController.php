@@ -13,12 +13,12 @@ class ColorController
     public function index()
     {
         $colors = $this->colorModel->getAllcolors();
-        renderView("view/skus/color/index.php", compact('colors'), "color List");
+        renderView("view/admin/skus/color/index.php", compact('colors'), "color List", 'admin');
     }
     public function show($id)
     {
         $color = $this->colorModel->getColorById($id);
-        renderView("view/skus/color/show.php", compact('colors'), "color Detail");
+        renderView("view/admin/skus/color/show.php", compact('colors'), "color Detail", 'admin');
     }
     public function create()
     {
@@ -28,23 +28,23 @@ class ColorController
             if(empty($errors)){
                 $this->colorModel->createColor($name);
                 $_SESSION['success'] = "Thêm color thành công!";
-                header("Location: /colors");
+                header("Location: /admin/colors");
                 exit;
             } else{
-                renderView("view/skus/color/create.php", compact('errors','name'), "Create color");
+                renderView("view/admin/skus/color/create.php", compact('errors','name'), "Create color", 'admin');
             }
 
             // $this->colorModel->createcolor($name, $description);
             // header("Location: /color");
         } else {
-            renderView("view/skus/color/create.php", [], "Create color");
+            renderView("view/admin/skus/color/create.php", [], "Create color", 'admin');
         }
     }
     public function delete($id)
     {
         $this->colorModel->deleteColor($id);
         $_SESSION['success'] = "Xóa color thành công";
-        header("Location: /colors");
+        header("Location: /admin/colors");
     }
     public function edit($id)
     {
@@ -53,17 +53,17 @@ class ColorController
             $errors=$this->validateColor(['name'=>$name]);
 
             if(!empty($errors)){
-                renderView("view/skus/color/edit.php", compact('errors'), "Edit color");
+                renderView("view/admin/skus/color/edit.php", compact('errors'), "Edit color", 'admin');
             }else{
                 $this->colorModel->updateColor($id, $name);
-                header("Location: /colors");
+                header("Location: /admin/colors");
             }
 
             $this->colorModel->updateColor($id, $name);
-            header("Location: /colors");
+            header("Location: /admin/colors");
         } else {
             $color = $this->colorModel->getColorById($id);
-            renderView("view/skus/color/edit.php", compact('color'), "Edit color");
+            renderView("view/admin/skus/color/edit.php", compact('color'), "Edit color", 'admin');
         }
     }
     private function validateColor($color) {
