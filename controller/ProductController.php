@@ -21,6 +21,12 @@ class ProductController
         //compact: gom bien dien thanh array
         renderView("view/admin/products/index.php", compact('products'), 'Product list', 'admin');
     }
+    public function index2()
+    {
+        $products = $this->productModel->getAllProducts();
+        //compact: gom bien dien thanh array
+        renderView("view/product.php", compact('products'), 'Product list');
+    }
 
     public function indexHome()
     {

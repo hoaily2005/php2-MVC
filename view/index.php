@@ -1,4 +1,4 @@
-<div class="p-5 mb-4 bg-image rounded-3" style="background-image: url('https://media-cdn-v2.laodong.vn/storage/newsportal/2024/8/17/1381062/Mancity.jpg'); background-size: cover; background-position: top-center;">
+<div class="p-5 mb-4 bg-image rounded-3" style="background-image: url('https://theme.hstatic.net/200000174405/1001111911/14/slideshow_3.jpg?v=1830'); background-size: cover; background-position: top-center;">
     <div class="container-fluid py-5">
         <h1 class="display-5 fw-bold text-white">Shopdothethao <span class="fs-3">Shop bán đồ thể thao</span></h1>
         <p class="col-md-8 fs-4 text-white" id="text-container"></p>

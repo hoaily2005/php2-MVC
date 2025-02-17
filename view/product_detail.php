@@ -155,3 +155,109 @@
 });
 
 </script>
+<style>
+    .image-format {
+    width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.btn-group {
+    margin-bottom: 10px;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.btn-check:checked+.btn-outline-primary {
+    background-color: rgb(233, 58, 78);
+    color: white;
+}
+
+.input-group {
+    max-width: 150px;
+    display: flex;
+    align-items: center;
+}
+
+#quantity {
+    text-align: center;
+    width: 50px;
+    padding: 5px;
+}
+
+.color-option,
+.size-option {
+    position: relative;
+}
+
+.color-label,
+.size-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-label:hover,
+.size-label:hover {
+    border-color: #cbd5e0;
+    background-color: #f7fafc;
+}
+
+.btn-check:checked+.color-label,
+.btn-check:checked+.size-label {
+    border-color: #DC1E35;
+    background-color: #eff6ff;
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+}
+
+.color-name {
+    font-size: 0.9rem;
+}
+
+.size-label {
+    min-width: 60px;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-check:disabled+.color-label,
+.btn-check:disabled+.size-label {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes select-pop {
+    0% {
+        transform: scale(0.95);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.btn-check:checked+.color-label,
+.btn-check:checked+.size-label {
+    animation: select-pop 0.2s ease-out;
+}
+
+</style>

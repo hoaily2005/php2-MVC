@@ -130,7 +130,18 @@ if (!empty($carts)) {
         updateSummary();
     });
 </script>
-
+<?php if (isset($_SESSION['errors'])): ?>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'Sản phẩm vượt quá số lượng tồn kho!',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    </script>
+    <?php unset($_SESSION['errors']); ?>
+<?php endif; ?>
 <style>
     body {
         font-family: 'Poppins', sans-serif;

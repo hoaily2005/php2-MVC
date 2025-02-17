@@ -19,17 +19,32 @@ class OrderController
 
     public function index()
     {
-        $orders = $this->orderModel->getOrders();
-        renderView("view/admin/order/list.php", compact('orders'), "Order List", 'admin');
+        $user_id = $_SESSION['users']['id'] ?? null;
+
+        if ($user_id) {
+            $orders = $this->orderModel->getOrders($user_id);
+            renderView("view/order/list.php", compact('orders'), "Order List");
+        } else {
+            header("Location: /login");
+            exit();
+        }
     }
+
+    public function admin()
+    {
+        $orders = $this->orderModel->getAllOrders();
+        renderView("view/order/admin.php", compact('orders'), "orders List", 'admin');
+    }
+
+
 
     public function show($id)
     {
         $order = $this->orderModel->getOrderById($id);
         if ($order) {
-            renderView("view/admin/order/show.php", compact('order'), "Order Detail", 'admin');
+            renderView("view/order/show.php", compact('order'), "Order Detail");
         } else {
-            renderView("view/admin/order/error.php", ['message' => 'Order not found'], "Error", 'admin');
+            renderView("view/unauthorized.php", ['message' => 'Order not found'], "Error");
         }
     }
 
@@ -86,12 +101,25 @@ class OrderController
 
     public function delete($id)
     {
-        $isDeleted = $this->orderModel->deleteOrder($id);
+        $this->orderModel->delete($id);
+        $_SESSION['success'] = "Xóa color thành công";
+        header("Location: /admin/orders");
+    }
 
-        if ($isDeleted) {
-            renderView("view/admin/order/success.php", ['message' => 'Order deleted successfully!'], "Success", 'admin');
-        } else {
-            renderView("view/admin/order/error.php", ['message' => 'Failed to delete order.'], "Error", 'admin');
+    public function updateStatus($order_id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_status'])) {
+            $payment_status = $_POST['payment_status'];
+
+            $isUpdated = $this->orderModel->updateOrderStatus($order_id, $payment_status);
+
+            if ($isUpdated) {
+                $_SESSION['success'] = "Cập nhật trạng thái thành công";
+                header("Location: /admin/orders");
+                exit();
+            } else {
+                echo "Lỗi không thể cập nhập trạng thái.";
+            }
         }
     }
 }

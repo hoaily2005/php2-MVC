@@ -7,10 +7,12 @@ require_once "model/CartModel.php";
 class CartController
 {
     private $cartModel;
+    private $productVariantModel;
 
     public function __construct()
     {
         $this->cartModel = new CartModel();
+        $this->productVariantModel = new ProductVariantModel();
     }
 
 
@@ -33,8 +35,7 @@ class CartController
     public function addCart()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            session_start();
-
+            
             $user_id = $_SESSION['users']['id'] ?? null;
             $cart_session = session_id();
             $sku = $_POST['sku'] ?? null;
@@ -53,6 +54,11 @@ class CartController
 
             if ($price <= 0) {
                 $errors[] = "Giá sản phẩm không hợp lệ.";
+            }
+
+            $stock = $this->productVariantModel->getStock($sku);
+            if ($quantity > $stock) {
+                $errors[] = "Số lượng vượt quá số lượng trong kho.";
             }
 
             if (!empty($errors)) {

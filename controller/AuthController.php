@@ -17,8 +17,8 @@ class AuthController
         $this->UserModel = new UserModel();
 
         $this->googleClient = new Google_Client();
-        $this->googleClient->setClientId('');
-        $this->googleClient->setClientSecret('');
+        $this->googleClient->setClientId('id_google_của_bạn');
+        $this->googleClient->setClientSecret('Secret_google_của_bạnbạn');
         $this->googleClient->setRedirectUri('http://localhost:8000/auth/google-login');
         $this->googleClient->addScope("email");
         $this->googleClient->addScope("profile");
@@ -260,8 +260,10 @@ class AuthController
     public function show($id)
     {
         $user = $this->UserModel->getUserById($id);
-        renderView("view/admin/user/show.php", compact('user'), "User Details", 'admin');
+        renderView("view/profile/index.php", compact('user'), "User Details");
     }
+    
+
     public function delete($id)
     {
         $user = $this->UserModel->getUserById($id);

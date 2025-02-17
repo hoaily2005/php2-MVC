@@ -74,6 +74,10 @@ class CartModel
             $updateStmt->execute();
         }
     }
+
+    
+
+
     public function updateCart($user_id, $cart_session, $cart_id, $quantity)
     {
         $query = "UPDATE carts SET quantity = :quantity WHERE user_id = :user_id AND cart_session = :cart_session AND id = :cart_id";
@@ -84,9 +88,6 @@ class CartModel
         $stmt->bindParam(':quantity', $quantity);
         return $stmt->execute();
     }
-
-
-
 
     public function deleteCart($user_id, $session_id, $cart_id)
     {

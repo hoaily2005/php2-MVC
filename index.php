@@ -26,6 +26,8 @@ $router->addMiddleware('logRequest');
 
 
 $router->addRoute("/", [$controller, "index"]);
+$router->addRoute("/products", [$productController, "index2"]);
+
 $router->addRoute("/admin", [$controller, "admin"], ['checkLogin', 'checkAdmin']);
 //product
 $router->addRoute("/admin/products", [$productController, "index"], ['checkLogin', 'checkUserOrAdmin']);
@@ -56,6 +58,7 @@ $router->addRoute("/login", [$authController, "login"]);
 $router->addRoute("/register", [$authController, "register"]);
 $router->addRoute("/logout", [$authController, "logout"]);
 $router->addRoute("/", [$controller, "index"]);
+$router->addRoute("/profile/{id}", [$authController, "show"], ['checkLogin', 'checkUserOrAdmin']);
 $router->addRoute("/login/google", [$authController, "redirectToGoogle"]);
 $router->addRoute("/auth/google-login", [$authController, "googleCallback"]);
 
@@ -88,9 +91,14 @@ $router->addRoute("/carts/deleteAll", [$cartController, "deleteAll"]);
 $router->addRoute("/carts/update", [$cartController, "update"]);
 
 //Order
-$router->addRoute("/checkout", [$orderController, "createOrder"]);
-$router->addRoute("/admin/orders", [$orderController, "index"], ['checkLogin', 'checkAdmin']);
-$router->addRoute("/orders/detail/{id}", [$orderController, "show"], ['checkLogin', 'checkUserOrAdmin']);
+$router->addRoute("/checkout", [$orderController, "createOrder"], ['checkLogin', 'checkUserOrAdmin']);
+$router->addRoute("/admin/orders", [$orderController, "admin"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/admin/orders/update/{id}", [$orderController, "updateStatus"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/admin/orders/delete/{id}", [$orderController, "delete"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/orders", [$orderController, "index"], ['checkLogin', 'checkUserOrAdmin']);
+$router->addRoute("/orders/show/{id}", [$orderController, "show"], ['checkLogin', 'checkUserOrAdmin']);
+
+
 $router->addRoute("/unauthorized", [$authController, "unauthorized"]);
 
 $router->dispatch();

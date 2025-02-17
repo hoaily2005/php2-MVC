@@ -105,7 +105,15 @@ class ProductVariantModel
         return $stmt->execute();
     }
 
-
+    public function getStock($sku)
+    {
+        $query = "SELECT quantity FROM products_variants WHERE sku = :sku";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':sku', $sku);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['quantity'] ?? 0;
+    }
 
     public function checkVariantExists($product_id, $color_id, $size_id)
     {
