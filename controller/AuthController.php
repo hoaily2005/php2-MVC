@@ -2,13 +2,14 @@
 require_once "model/UserModel.php";
 require_once "mail/mailler.php";
 require_once "view/helpers.php";
-require_once "vendor/autoload.php";
-require_once 'env.php';
+require_once './vendor/autoload.php';
+require_once './env.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
 class AuthController
 {
-    
     private $UserModel;
     private $googleClient;
 
@@ -17,9 +18,9 @@ class AuthController
         $this->UserModel = new UserModel();
 
         $this->googleClient = new Google_Client();
-        $this->googleClient->setClientId('id_google_của_bạn');
-        $this->googleClient->setClientSecret('Secret_google_của_bạnbạn');
-        $this->googleClient->setRedirectUri('http://localhost:8000/auth/google-login');
+        $this->googleClient->setClientId($_ENV['GOOGLE_CLIENT_ID']);
+        $this->googleClient->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
+        $this->googleClient->setRedirectUri($_ENV['GOOGLE_REDIRECT_URL']);
         $this->googleClient->addScope("email");
         $this->googleClient->addScope("profile");
     }
@@ -262,7 +263,7 @@ class AuthController
         $user = $this->UserModel->getUserById($id);
         renderView("view/profile/index.php", compact('user'), "User Details");
     }
-    
+
 
     public function delete($id)
     {

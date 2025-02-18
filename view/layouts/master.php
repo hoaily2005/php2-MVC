@@ -18,12 +18,12 @@
     <div class="topbar bg-dark text-white py-2">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="topbar-left">
-                <a href="//banhang.shopee.vn" target="_blank" class="text-white">lyxuanhoai18@gmail.com</a>
-                <a href="/seller/signup" class="text-white ms-3" title="Trở thành Người bán Shopee">0935.975.736</a>
+                <a href="#" target="_blank" class="text-white">lyxuanhoai18@gmail.com</a>
+                <a href="#" class="text-white ms-3" title="Trở thành Người bán Shopee">0935.975.736</a>
             </div>
             <div class="topbar-right">
-                <a href="https://facebook.com/ShopeeVN" target="_blank" class="text-white me-3" title="Facebook"><i class="fab fa-facebook"></i></a>
-                <a href="https://instagram.com/Shopee_VN" target="_blank" class="text-white" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://facebook.com/hoaily19.vn" target="_blank" class="text-white me-3" title="Facebook"><i class="fab fa-facebook"></i></a>
+                <a href="https://instagram.com/hoaily0602" target="_blank" class="text-white" title="Instagram"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
     </div>

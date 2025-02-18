@@ -87,14 +87,14 @@ class OrderController
                     renderView("view/order_success.php", ['message' => $message], "Order Success");
                 } else {
                     $message = "Failed to create order.";
-                    renderView("view/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
+                    renderView("view/checkout/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
                 }
             } else {
                 $message = "Please fill in all required fields.";
-                renderView("view/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
+                renderView("view/checkout/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
             }
         } else {
-            renderView("view/check_out.php", ['carts' => $carts], "Create Order");
+            renderView("view/checkout/check_out.php", ['carts' => $carts], "Create Order");
         }
     }
 
