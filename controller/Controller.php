@@ -2,6 +2,8 @@
 require_once "view/helpers.php";
 require_once "model/CategoryModel.php";
 require_once "model/ProductModel.php";
+require_once 'core/BladeServiceProvider.php';
+
 
 class Controller
 {
@@ -17,13 +19,13 @@ class Controller
     {
         $category = $this->categoryModel->getAllcategories();
         $products = $this->productModel->getAllProducts();
-        renderView('view/index.php', compact('category', 'products'), 'Home');
+        BladeServiceProvider::render('index', compact('category', 'products'), 'Home');
     }
 
     public function admin()
     {
         $category = $this->categoryModel->getAllcategories();
         $products = $this->productModel->getAllProducts();
-        renderView('view/admin/index.php', compact('category', 'products'), 'Admin', 'admin');
+        BladeServiceProvider::render('admin/index', compact('category', 'products'), 'Admin', 'admin');
     }
 }

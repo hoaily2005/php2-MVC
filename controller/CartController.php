@@ -4,6 +4,8 @@ require_once "model/UserModel.php";
 require_once "model/ProductVariantModel.php";
 require_once "view/helpers.php";
 require_once "model/CartModel.php";
+require_once 'core/BladeServiceProvider.php';
+
 class CartController
 {
     private $cartModel;
@@ -29,7 +31,7 @@ class CartController
         // $user_id = $_SESSION['users']['id'] ?? null;
         // $session_id = session_id();
         $carts = $this->cartModel->getCart($user_id, $session_id);
-        renderView("view/cart/list.php", compact('carts'), "carts List");
+        BladeServiceProvider::render("cart/list", compact('carts'), "carts List");
     }
 
     public function addCart()

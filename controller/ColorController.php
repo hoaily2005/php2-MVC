@@ -1,6 +1,8 @@
 <?php
 require_once "model/ColorModel.php";
 require_once "view/helpers.php";
+require_once 'core/BladeServiceProvider.php';
+
 
 class ColorController
 {
@@ -13,12 +15,12 @@ class ColorController
     public function index()
     {
         $colors = $this->colorModel->getAllcolors();
-        renderView("view/admin/skus/color/index.php", compact('colors'), "color List", 'admin');
+        BladeServiceProvider::render("admin/skus/color/index", compact('colors'), "color List", 'admin');
     }
     public function show($id)
     {
         $color = $this->colorModel->getColorById($id);
-        renderView("view/admin/skus/color/show.php", compact('colors'), "color Detail", 'admin');
+        BladeServiceProvider::render("admin/skus/color/show", compact('colors'), "color Detail", 'admin');
     }
     public function create()
     {
@@ -31,13 +33,13 @@ class ColorController
                 header("Location: /admin/colors");
                 exit;
             } else{
-                renderView("view/admin/skus/color/create.php", compact('errors','name'), "Create color", 'admin');
+                BladeServiceProvider::render("admin/skus/color/create", compact('errors','name'), "Create color", 'admin');
             }
 
             // $this->colorModel->createcolor($name, $description);
             // header("Location: /color");
         } else {
-            renderView("view/admin/skus/color/create.php", [], "Create color", 'admin');
+            BladeServiceProvider::render("admin/skus/color/create", [], "Create color", 'admin');
         }
     }
     public function delete($id)
@@ -53,7 +55,7 @@ class ColorController
             $errors=$this->validateColor(['name'=>$name]);
 
             if(!empty($errors)){
-                renderView("view/admin/skus/color/edit.php", compact('errors'), "Edit color", 'admin');
+                BladeServiceProvider::render("admin/skus/color/edit", compact('errors'), "Edit color", 'admin');
             }else{
                 $this->colorModel->updateColor($id, $name);
                 header("Location: /admin/colors");
@@ -63,7 +65,7 @@ class ColorController
             header("Location: /admin/colors");
         } else {
             $color = $this->colorModel->getColorById($id);
-            renderView("view/admin/skus/color/edit.php", compact('color'), "Edit color", 'admin');
+            BladeServiceProvider::render("admin/skus/color/edit", compact('color'), "Edit color", 'admin');
         }
     }
     private function validateColor($color) {

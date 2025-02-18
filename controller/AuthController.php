@@ -4,6 +4,8 @@ require_once "mail/mailler.php";
 require_once "view/helpers.php";
 require_once './vendor/autoload.php';
 require_once './env.php';
+require_once 'core/BladeServiceProvider.php';
+
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
@@ -120,7 +122,7 @@ class AuthController
                 exit();
             }
         } else {
-            renderView('view/auth/forgot.php', [], 'Forgot Password');
+            BladeServiceProvider::render('auth/forgot', [], 'Forgot Password');
         }
     }
 
@@ -162,7 +164,7 @@ class AuthController
             header('Location: /login');
             exit();
         } else {
-            renderView('view/auth/resetpass.php', [], 'Reset Password');
+            BladeServiceProvider::render('auth/resetpass', [], 'Reset Password');
         }
     }
 
@@ -204,7 +206,7 @@ class AuthController
                 exit();
             }
         } else {
-            renderView('view/auth/register.php', [], 'Register');
+            BladeServiceProvider::render('auth/register', [], 'Register');
         }
     }
 
@@ -234,14 +236,14 @@ class AuthController
                 exit();
             }
         } else {
-            renderView('view/auth/login.php', [], 'Login');
+            BladeServiceProvider::render('auth/login', [], 'Login');
         }
     }
 
 
     public function unauthorized()
     {
-        renderView('view/unauthorized.php', [], 'Unauthorized Access');
+        BladeServiceProvider::render('unauthorized', [], 'Unauthorized Access');
     }
 
     public function logout()
@@ -255,13 +257,13 @@ class AuthController
     public function indexUser()
     {
         $users = $this->UserModel->getAllUsers();
-        renderView("view/admin/user/index.php", compact('users'), "User List", 'admin');
+        BladeServiceProvider::render("admin/user/index", compact('users'), "User List", 'admin');
     }
 
     public function show($id)
     {
         $user = $this->UserModel->getUserById($id);
-        renderView("view/profile/index.php", compact('user'), "User Details");
+        BladeServiceProvider::render("profile/index", compact('user'), "User Details");
     }
 
 
@@ -319,6 +321,6 @@ class AuthController
             exit;
         }
 
-        renderView("view/admin/user/edit.php", compact('user'), "Edit Role", 'admin');
+        BladeServiceProvider::render("admin/user/edit", compact('user'), "Edit Role", 'admin');
     }
 }

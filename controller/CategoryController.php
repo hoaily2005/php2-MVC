@@ -1,6 +1,8 @@
 <?php
 require_once "model/CategoryModel.php";
 require_once "view/helpers.php";
+require_once 'core/BladeServiceProvider.php';
+
 
 class CategoryController
 {
@@ -13,12 +15,12 @@ class CategoryController
     public function index()
     {
         $categories = $this->categoryModel->getAllCategories();
-        renderView("view/admin/category/index.php", compact('categories'), "Category List", 'admin');
+        BladeServiceProvider::render("admin/category/index", compact('categories'), "Category List", 'admin');
     }
     public function show($id)
     {
         $category = $this->categoryModel->getCategoryById($id);
-        renderView("view/admin/category/show.php", compact('category'), "Category Detail", 'admin');
+        BladeServiceProvider::render("admin/category/show", compact('category'), "Category Detail", 'admin');
     }
     public function create()
     {
@@ -32,10 +34,10 @@ class CategoryController
                 header("Location: /admin/category");
                 exit;
             } else {
-                renderView("view/admin/category/create.php", compact('errors', 'name', 'description'), "Create Category", 'admin');
+                BladeServiceProvider::render("admin/category/create", compact('errors', 'name', 'description'), "Create Category", 'admin');
             }
         } else {
-            renderView("view/admin/category/create.php", [], "Create Category", 'admin');
+            BladeServiceProvider::render("admin/category/create", [], "Create Category", 'admin');
         }
     }
     public function delete($id)
@@ -52,7 +54,7 @@ class CategoryController
             $errors = $this->validateCategory(['name' => $name, 'description' => $description]);
 
             if (!empty($errors)) {
-                renderView("view/admin/category/edit.php", compact('errors'), "Edit Category", 'admin');
+                BladeServiceProvider::render("admin/category/edit", compact('errors'), "Edit Category", 'admin');
             } else {
                 $this->categoryModel->updateCategory($id, $name, $description);
                 header("Location: /admin/category");
@@ -62,7 +64,7 @@ class CategoryController
             header("Location: /admin/category");
         } else {
             $category = $this->categoryModel->getCategoryById($id);
-            renderView("view/admin/category/edit.php", compact('category'), "Edit Category", 'admin');
+            BladeServiceProvider::render("admin/category/edit", compact('category'), "Edit Category", 'admin');
         }
     }
     private function validateCategory($category)

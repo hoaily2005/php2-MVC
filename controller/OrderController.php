@@ -1,10 +1,15 @@
 <?php
+
+use Illuminate\Support\Facades\Blade;
+
 require_once "model/CategoryModel.php";
 require_once "model/UserModel.php";
 require_once "model/ProductVariantModel.php";
 require_once "model/CartModel.php";
 require_once "view/helpers.php";
 require_once "model/OrderModel.php";
+require_once 'core/BladeServiceProvider.php';
+
 
 class OrderController
 {
@@ -23,7 +28,7 @@ class OrderController
 
         if ($user_id) {
             $orders = $this->orderModel->getOrders($user_id);
-            renderView("view/order/list.php", compact('orders'), "Order List");
+            BladeServiceProvider::render("order/list", compact('orders'), "Order List");
         } else {
             header("Location: /login");
             exit();
@@ -33,7 +38,7 @@ class OrderController
     public function admin()
     {
         $orders = $this->orderModel->getAllOrders();
-        renderView("view/order/admin.php", compact('orders'), "orders List", 'admin');
+        BladeServiceProvider::render("order/admin", compact('orders'), "orders List", 'admin');
     }
 
 
@@ -42,9 +47,9 @@ class OrderController
     {
         $order = $this->orderModel->getOrderById($id);
         if ($order) {
-            renderView("view/order/show.php", compact('order'), "Order Detail");
+            BladeServiceProvider::render("order/show", compact('order'), "Order Detail");
         } else {
-            renderView("view/unauthorized.php", ['message' => 'Order not found'], "Error");
+            BladeServiceProvider::render("unauthorized", ['message' => 'Order not found'], "Error");
         }
     }
 
@@ -84,17 +89,17 @@ class OrderController
                     $this->cartModel->clearCart($user_id);
 
                     $message = "Order created successfully!";
-                    renderView("view/order_success.php", ['message' => $message], "Order Success");
+                    BladeServiceProvider::render("order_success", ['message' => $message], "Order Success");
                 } else {
                     $message = "Failed to create order.";
-                    renderView("view/checkout/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
+                    BladeServiceProvider::render("checkout/check_out", ['message' => $message, 'carts' => $carts], "Create Order");
                 }
             } else {
                 $message = "Please fill in all required fields.";
-                renderView("view/checkout/check_out.php", ['message' => $message, 'carts' => $carts], "Create Order");
+                BladeServiceProvider::render("checkout/check_out", ['message' => $message, 'carts' => $carts], "Create Order");
             }
         } else {
-            renderView("view/checkout/check_out.php", ['carts' => $carts], "Create Order");
+            BladeServiceProvider::render("checkout/check_out", ['carts' => $carts], "Create Order");
         }
     }
 

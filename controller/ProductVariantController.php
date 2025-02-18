@@ -4,6 +4,7 @@ require_once "model/ProductModel.php";
 require_once "model/ColorModel.php";
 require_once "model/SizeModel.php";
 require_once "view/helpers.php";
+require_once 'core/BladeServiceProvider.php';
 
 class ProductVariantController
 {
@@ -25,7 +26,7 @@ class ProductVariantController
     public function index()
     {
         $variants = $this->variantModel->getAllProductVariant();
-        renderView("view/admin/products/variants.php", compact('variants'), "Danh sách biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/variants", compact('variants'), "Danh sách biến thể", 'admin');
     }
 
     public function show($id)
@@ -34,7 +35,7 @@ class ProductVariantController
 
         $variants = $this->variantModel->getProductVariantsByProductId($id);
 
-        renderView("view/admin/products/show_variant.php", compact('product', 'variants'), "Chi tiết biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/show_variant", compact('product', 'variants'), "Chi tiết biến thể", 'admin');
     }
 
 
@@ -68,7 +69,7 @@ class ProductVariantController
 
             $errors = $this->checkExits($_POST);
             if (!empty($errors)) {
-                renderView("view/admin/products/variants.php", compact('errors'), "Thêm biến thể", 'admin');
+                BladeServiceProvider::render("admin/products/variants", compact('errors'), "Thêm biến thể", 'admin');
                 return;
             }
 
@@ -90,7 +91,7 @@ class ProductVariantController
         $colors = $this->colorsModel->getAllColors();
         $sizes = $this->sizesModel->getAllSizes();
 
-        renderView("view/admin/products/variants.php", compact('products', 'colors', 'sizes', 'product_id'), "Thêm biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/variants", compact('products', 'colors', 'sizes', 'product_id'), "Thêm biến thể", 'admin');
     }
 
 
@@ -138,7 +139,7 @@ class ProductVariantController
             $image = isset($_FILES['image']) ? $_FILES['image'] : null;
 
             if (!$this->validateVariant($_POST)) {
-                renderView("view/admin/products/edit_variant.php", ['error' => "Vui lòng nhập đầy đủ thông tin"], "Chỉnh sửa biến thể", 'admin');
+                BladeServiceProvider::render("admin/products/edit_variant", ['error' => "Vui lòng nhập đầy đủ thông tin"], "Chỉnh sửa biến thể", 'admin');
                 return;
             }
 
@@ -155,7 +156,7 @@ class ProductVariantController
             $colors = $this->colorsModel->getAllColors();
             $sizes = $this->sizesModel->getAllSizes();
 
-            renderView("view/admin/products/edit_variant.php", compact('variant', 'products', 'colors', 'sizes'), "Chỉnh sửa biến thể", 'admin');
+            BladeServiceProvider::render("admin/products/edit_variant", compact('variant', 'products', 'colors', 'sizes'), "Chỉnh sửa biến thể", 'admin');
         }
     }
 
