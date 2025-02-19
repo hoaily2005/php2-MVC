@@ -14,13 +14,15 @@ class CategoryController
     }
     public function index()
     {
+        $title = "Category List";
         $categories = $this->categoryModel->getAllCategories();
-        BladeServiceProvider::render("admin/category/index", compact('categories'), "Category List", 'admin');
+        BladeServiceProvider::render("admin/category/index", compact('categories', 'title'), "Category List", 'admin');
     }
     public function show($id)
     {
+        $title = "Category Detail";
         $category = $this->categoryModel->getCategoryById($id);
-        BladeServiceProvider::render("admin/category/show", compact('category'), "Category Detail", 'admin');
+        BladeServiceProvider::render("admin/category/show", compact('category', 'title'), "Category Detail", 'admin');
     }
     public function create()
     {

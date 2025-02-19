@@ -13,19 +13,22 @@ class SizeController
     }
     public function index()
     {
+        $title = "size List";
         $sizes = $this->sizeModel->getAllSizes();
-        BladeServiceProvider::render("admin/skus/size/index", compact('sizes'), "size List", 'admin');
+        BladeServiceProvider::render("admin/skus/size/index", compact('sizes', 'title'), "size List", 'admin');
     }
     public function show($id)
     {
+        $title = "size Detail";
         $size = $this->sizeModel->getsizeById($id);
-        BladeServiceProvider::render("admin/skus/size/show", compact('sizes'), "size Detail", 'admin');
+        BladeServiceProvider::render("admin/skus/size/show", compact('sizes','title'), "size Detail", 'admin');
     }
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = $_POST['name'];
             $errors = $this->validatesize(['name' => $name]);
+            $title = "Create size";
             if(empty($errors)){
                 $this->sizeModel->createsize($name);
                 $_SESSION['success'] = "Thêm size thành công!";
@@ -33,13 +36,13 @@ class SizeController
                 header("Location: /admin/sizes");
                 exit;
             } else{
-                BladeServiceProvider::render("admin/skus/size/create", compact('errors','name'), "Create size", 'admin');
+                BladeServiceProvider::render("admin/skus/size/create", compact('errors','name', 'title'), "Create size", 'admin');
             }
 
             // $this->sizeModel->createsize($name, $description);
             // header("Location: /size");
         } else {
-            BladeServiceProvider::render("admin/skus/size/create", [], "Create size", 'admin');
+            BladeServiceProvider::render("admin/skus/size/create", ['title' => "Create size"]);
         }
     }
     public function delete($id)

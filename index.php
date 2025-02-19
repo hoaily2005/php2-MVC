@@ -8,6 +8,7 @@ require_once "controller/ColorController.php";
 require_once "controller/ProductVariantController.php";
 require_once "controller/CartController.php";
 require_once "controller/OrderController.php";
+require_once "controller/VnpayController.php";
 require_once "router/Router.php";
 require_once "middleware.php";
 
@@ -20,6 +21,7 @@ $colorController = new ColorController();
 $productVariantController = new ProductVariantController();
 $cartController = new CartController();
 $orderController = new OrderController();
+$vnpayController = new VnpayController();
 $controller = new Controller();
 
 $router->addMiddleware('logRequest');
@@ -92,6 +94,9 @@ $router->addRoute("/carts/update", [$cartController, "update"]);
 
 //Order
 $router->addRoute("/checkout", [$orderController, "createOrder"], ['checkLogin', 'checkUserOrAdmin']);
+$router->addRoute("/vnpay", [$vnpayController, "createPayment"], ['checkLogin', 'checkUserOrAdmin']);
+$router->addRoute("/vnpay/callback", [$vnpayController, "vnpayReturn"], ['checkLogin', 'checkUserOrAdmin']);
+
 $router->addRoute("/admin/orders", [$orderController, "admin"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/orders/update/{id}", [$orderController, "updateStatus"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/orders/delete/{id}", [$orderController, "delete"], ['checkLogin', 'checkAdmin']);

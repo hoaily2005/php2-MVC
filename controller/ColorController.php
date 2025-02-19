@@ -14,18 +14,21 @@ class ColorController
     }
     public function index()
     {
+        $title = "color List";
         $colors = $this->colorModel->getAllcolors();
-        BladeServiceProvider::render("admin/skus/color/index", compact('colors'), "color List", 'admin');
+        BladeServiceProvider::render("admin/skus/color/index", compact('colors', 'title'), 'admin');
     }
     public function show($id)
     {
+        $title = "color Detail";
         $color = $this->colorModel->getColorById($id);
-        BladeServiceProvider::render("admin/skus/color/show", compact('colors'), "color Detail", 'admin');
+        BladeServiceProvider::render("admin/skus/color/show", compact('color', 'title'), 'admin');
     }
     public function create()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = $_POST['name'];
+            $title = "Create color";
             $errors = $this->validateColor(['name' => $name]);
             if(empty($errors)){
                 $this->colorModel->createColor($name);
@@ -33,13 +36,13 @@ class ColorController
                 header("Location: /admin/colors");
                 exit;
             } else{
-                BladeServiceProvider::render("admin/skus/color/create", compact('errors','name'), "Create color", 'admin');
+                BladeServiceProvider::render("admin/skus/color/create", compact('errors','name', 'title'), 'admin');
             }
 
             // $this->colorModel->createcolor($name, $description);
             // header("Location: /color");
         } else {
-            BladeServiceProvider::render("admin/skus/color/create", [], "Create color", 'admin');
+            BladeServiceProvider::render("admin/skus/color/create", ['title' => "Create color"], "Create color", 'admin');
         }
     }
     public function delete($id)

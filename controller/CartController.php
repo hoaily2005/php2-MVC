@@ -37,7 +37,7 @@ class CartController
     public function addCart()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            
+
             $user_id = $_SESSION['users']['id'] ?? null;
             $cart_session = session_id();
             $sku = $_POST['sku'] ?? null;
@@ -148,4 +148,5 @@ class CartController
         header("Location: /carts");
         exit();
     }
+   
 }

@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $title ? $title . "Admin" : "My App" ?> | Admin Dashboard</title>
-    <!-- Bootstrap CSS -->
+    <title>
+        <?php 
+            echo isset($title) && !empty($title) ? $title . " | Admin" : "My App | Admin Dashboard";
+        ?>
+    </title>    <!-- Bootstrap CSS -->
     <link rel="icon" href="https://i.pinimg.com/originals/a0/d4/ea/a0d4eaba7e055708242b095e55329b6d.jpg" type="">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

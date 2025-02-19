@@ -25,17 +25,18 @@ class ProductVariantController
     // Danh sách tất cả biến thể sản phẩm
     public function index()
     {
+        $title = "Variant List";
         $variants = $this->variantModel->getAllProductVariant();
-        BladeServiceProvider::render("admin/products/variants", compact('variants'), "Danh sách biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/variants", compact('variants', 'title'), "Danh sách biến thể", 'admin');
     }
 
     public function show($id)
     {
+        $title = "Variant Detail";
         $product = $this->productsModel->getProductById($id);
-
         $variants = $this->variantModel->getProductVariantsByProductId($id);
 
-        BladeServiceProvider::render("admin/products/show_variant", compact('product', 'variants'), "Chi tiết biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/show_variant", compact('product', 'variants', 'title'), "Chi tiết biến thể", 'admin');
     }
 
 
@@ -90,8 +91,9 @@ class ProductVariantController
         $products = $this->productsModel->getAllProducts();
         $colors = $this->colorsModel->getAllColors();
         $sizes = $this->sizesModel->getAllSizes();
+        $title = "Add Variant";
 
-        BladeServiceProvider::render("admin/products/variants", compact('products', 'colors', 'sizes', 'product_id'), "Thêm biến thể", 'admin');
+        BladeServiceProvider::render("admin/products/variants", compact('products', 'colors', 'sizes', 'product_id', 'title'), "Thêm biến thể", 'admin');
     }
 
 

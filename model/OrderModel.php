@@ -71,10 +71,10 @@ class OrderModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function createOrder($user_id, $payment_method, $payment_status, $shipping_address, $total_price)
+    public function createOrder($user_id, $payment_method, $payment_status, $shipping_address, $total_price, $email, $phone, $name)
     {
-        $query = "INSERT INTO orders (user_id, payment_method, payment_status, shipping_address, total_price)
-                  VALUES (:user_id, :payment_method, :payment_status, :shipping_address, :total_price)";
+        $query = "INSERT INTO orders (user_id, payment_method, payment_status, shipping_address, total_price, email, phone, name)
+                  VALUES (:user_id, :payment_method, :payment_status, :shipping_address, :total_price, :email, :phone, :name)";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':user_id', $user_id);
@@ -82,6 +82,9 @@ class OrderModel
         $stmt->bindParam(':payment_status', $payment_status);
         $stmt->bindParam(':shipping_address', $shipping_address);
         $stmt->bindParam(':total_price', $total_price, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':name', $name);
 
         return $stmt->execute();
     }
@@ -128,15 +131,27 @@ class OrderModel
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
-    
-    public function updateOrderStatus($order_id, $payment_status)
+
+    public function getUserEmail($order_id)
     {
-        $query = "UPDATE orders SET payment_status = :payment_status WHERE id = :order_id";
+        $query = "SELECT u.email FROM users u
+              INNER JOIN orders o ON o.user_id = u.id
+              WHERE o.id = :order_id";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':payment_status', $payment_status);
         $stmt->bindParam(':order_id', $order_id);
+        $stmt->execute();
 
-        return $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['email'] : null;
+    }
+
+    public function updateOrderStatus($order_id, $status)
+    {
+        $sql = "UPDATE orders SET payment_status = :status WHERE id = :order_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':order_id', $order_id);
+        return $stmt->execute(); 
     }
 }

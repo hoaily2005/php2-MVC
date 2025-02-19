@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "23e5b9a9db28df3340ce667493734e75",
+    "content-hash": "a3d8af47787f8ef00cb2197c83fa691b",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -946,6 +946,54 @@
             "time": "2024-11-21T16:28:56+00:00"
         },
         {
+            "name": "illuminate/config",
+            "version": "v11.43.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/config.git",
+                "reference": "64daa8d520cd76e505a82460a672692c56a07be8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/config/zipball/64daa8d520cd76e505a82460a672692c56a07be8",
+                "reference": "64daa8d520cd76e505a82460a672692c56a07be8",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/collections": "^11.0",
+                "illuminate/contracts": "^11.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "11.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Config\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Config package.",
+            "homepage": "https://laravel.com",
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2024-11-14T17:17:02+00:00"
+        },
+        {
             "name": "illuminate/container",
             "version": "v11.42.1",
             "source": {
@@ -1390,6 +1438,69 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2025-01-22T21:19:28+00:00"
+        },
+        {
+            "name": "jenssegers/blade",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jenssegers/blade.git",
+                "reference": "7a31d61a6b1fe9cae5c61349dba435498dd8097c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jenssegers/blade/zipball/7a31d61a6b1fe9cae5c61349dba435498dd8097c",
+                "reference": "7a31d61a6b1fe9cae5c61349dba435498dd8097c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/config": "^9.0|^10.0|^11.0",
+                "illuminate/view": "^9.0|^10.0|^11.0",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.13",
+                "phpunit/phpunit": "^10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jenssegers\\Blade\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jens Segers",
+                    "homepage": "https://jenssegers.com"
+                }
+            ],
+            "description": "The standalone version of Laravel's Blade templating engine for use outside of Laravel.",
+            "keywords": [
+                "blade",
+                "laravel",
+                "render",
+                "template",
+                "view"
+            ],
+            "support": {
+                "issues": "https://github.com/jenssegers/blade/issues",
+                "source": "https://github.com/jenssegers/blade/tree/v2.0.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/jenssegers",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/jenssegers-blade",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-03-16T21:41:52+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -21,15 +21,17 @@ class ProductController
 
     public function index()
     {
+        $title = "Product List";
         $products = $this->productModel->getAllProducts();
         //compact: gom bien dien thanh array
-        BladeServiceProvider::render("admin/products/index", compact('products'), 'Product list', 'admin');
+        BladeServiceProvider::render("admin/products/index", compact('products', 'title'), 'Product list', 'admin');
     }
     public function index2()
     {
+        $title = "Product List";
         $products = $this->productModel->getAllProducts();
         //compact: gom bien dien thanh array
-        BladeServiceProvider::render("product", compact('products'), 'Product list');
+        BladeServiceProvider::render("product", compact('products', 'title'), 'Product list');
     }
 
     public function indexHome()
@@ -40,9 +42,10 @@ class ProductController
 
     public function show($id)
     {
+        $title = "Product Detail";
         $products = $this->productModel->getProductById($id);
         $variants = $this->variantModel->getProductVariantsByProductId($id);
-        BladeServiceProvider::render("product_detail", compact('products', 'variants'), "Chi tiết sản phẩm");
+        BladeServiceProvider::render("product_detail", compact('products', 'variants', 'title'), "Chi tiết sản phẩm");
     }
 
 

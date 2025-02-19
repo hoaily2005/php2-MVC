@@ -17,6 +17,7 @@
         "phpmailer/phpmailer": "^6.9",
         "illuminate/view": "^11.42",
         "illuminate/filesystem": "^11.42",
-        "illuminate/events": "^11.42"
+        "illuminate/events": "^11.42",
+        "jenssegers/blade": "^2.0"
     }
 }
