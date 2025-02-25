@@ -304,14 +304,14 @@ class AuthController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $role = $_POST['role'];
-
+            $name = $_POST['name'];
+            $phone = $_POST['phone'];
             if (!in_array($role, ['user', 'admin'])) {
                 $_SESSION['error'] = "Vai trò không hợp lệ!";
                 header("Location: /user/edit/$id");
                 exit;
             }
-
-            if ($this->UserModel->updateRole($id, $role)) {
+            if ($this->UserModel->updateRole($id, $role, $name, $phone)) {
                 $_SESSION['success'] = "Cập nhật vai trò thành công!";
             } else {
                 $_SESSION['error'] = "Có lỗi xảy ra khi cập nhật!";
@@ -320,7 +320,29 @@ class AuthController
             header("Location: /admin/users");
             exit;
         }
-
         BladeServiceProvider::render("admin/user/edit", compact('user'), "Edit Role", 'admin');
+    }
+
+
+    public function updateProfile($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $name = $_POST['name'];
+            $phone = $_POST['phone'];
+
+            $result = $this->UserModel->updateProfile($id, $name, $phone);
+
+            if ($result) {
+                $_SESSION['success'] = "Cập nhật thông tin thành công!";
+            } else {
+                $_SESSION['error'] = "Lỗi, không thể cập nhật thông tin!";
+            }
+
+            header('Location: /profile/' . $id);
+            exit();
+        } else {
+            header('Location: /profile/' . $id);
+            exit();
+        }
     }
 }

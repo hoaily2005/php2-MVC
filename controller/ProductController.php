@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Blade;    
+use Illuminate\Support\Facades\Blade;
 
 require_once "model/ProductModel.php";
 require_once "model/ProductVariantModel.php";
@@ -12,11 +12,13 @@ class ProductController
 {
     private $productModel;
     private $variantModel;
+    private $categoryModel;
 
     public function __construct()
     {
         $this->productModel = new ProductModel();
         $this->variantModel = new ProductVariantModel();
+        $this->categoryModel = new CategoryModel();
     }
 
     public function index()
@@ -26,12 +28,17 @@ class ProductController
         //compact: gom bien dien thanh array
         BladeServiceProvider::render("admin/products/index", compact('products', 'title'), 'Product list', 'admin');
     }
+    
     public function index2()
     {
-        $title = "Product List";
-        $products = $this->productModel->getAllProducts();
-        //compact: gom bien dien thanh array
-        BladeServiceProvider::render("product", compact('products', 'title'), 'Product list');
+        $categoryId = $_GET['category'] ?? '';
+        $priceRange = $_GET['price'] ?? '';
+
+        $products = $this->productModel->getProductsFitter($categoryId, $priceRange);
+
+        $categories = $this->categoryModel->getAllCategories();
+
+        BladeServiceProvider::render("product", compact('products', 'categories'));
     }
 
     public function indexHome()
@@ -45,8 +52,14 @@ class ProductController
         $title = "Product Detail";
         $products = $this->productModel->getProductById($id);
         $variants = $this->variantModel->getProductVariantsByProductId($id);
-        BladeServiceProvider::render("product_detail", compact('products', 'variants', 'title'), "Chi tiết sản phẩm");
+
+        $categoryId = $products['category_id'];
+
+        $relatedProducts = $this->productModel->getProductsByCategory($categoryId);
+
+        BladeServiceProvider::render("product_detail", compact('products', 'variants', 'relatedProducts', 'title'), "Chi tiết sản phẩm");
     }
+
 
 
     public function handleImageUploads($files)
@@ -80,7 +93,7 @@ class ProductController
             $description = $_POST['description'];
             $quantity = $_POST['quantity'];
             $price = $_POST['price'];
-            $category_id = $_POST['category']; 
+            $category_id = $_POST['category'];
 
             $imageUrls = $this->handleImageUploads($_FILES['images']);
 
@@ -120,7 +133,7 @@ class ProductController
             $description = $_POST['description'];
             $quantity = $_POST['quantity'];
             $price = $_POST['price'];
-            $category_id = $_POST['category'];  
+            $category_id = $_POST['category'];
 
             $product = $this->productModel->getProductById($id);
             $oldImage = $product['image'];
@@ -130,7 +143,7 @@ class ProductController
             if ($_FILES['image']['error'] == 0) {
                 $imageUrls = $this->handleImageUploads($_FILES['image']);
                 if (!empty($imageUrls)) {
-                    $image = $imageUrls[0];  
+                    $image = $imageUrls[0];
                 }
 
                 if ($oldImage && file_exists($oldImage)) {

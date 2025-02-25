@@ -99,4 +99,42 @@ class ProductModel
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
+    
+    public function getProductsFitter($categoryId, $priceRange)
+    {
+        $query = "SELECT * FROM products WHERE 1";
+
+        if ($categoryId) {
+            $query .= " AND category_id = :category_id";
+        }
+
+        if ($priceRange) {
+            $priceParts = explode('-', $priceRange);
+            if (count($priceParts) == 2) {
+                $query .= " AND price BETWEEN :price_min AND :price_max";
+            } else {
+                $query .= " AND price >= :price_min";
+            }
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($categoryId) {
+            $stmt->bindParam(':category_id', $categoryId);
+        }
+        if ($priceRange) {
+            $priceParts = explode('-', $priceRange);
+            if (count($priceParts) == 2) {
+                $stmt->bindParam(':price_min', $priceParts[0]);
+                $stmt->bindParam(':price_max', $priceParts[1]);
+            } else {
+                $stmt->bindParam(':price_min', $priceParts[0]);
+            }
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
 }

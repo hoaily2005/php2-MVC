@@ -52,15 +52,26 @@ class Mailer
             $this->mail->isHTML(true);
             $this->mail->CharSet = 'UTF-8';
             $this->mail->addAddress($email);
-            $subject = 'Đơn hàng #' . $order_id . ' - Thanh toán thành công';
-            $message = "Xin chào $name,<br><br>Cảm ơn bạn đã mua hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đã được thanh toán thành công.<br><br>";
-            $message .= "<strong>Mã đơn hàng:</strong> $order_id<br>";
-            $message .= "<strong>Tổng tiền:</strong> " . number_format($amount, 0, ',', '.') . "₫<br><br>";
-            $message .= "Trân trọng,<br>Your Company";
-
-            return $this->sendMail($email, $subject, $order_id, $amount, $message);
+            
+            $subject = "Đơn hàng #$order_id - Thanh toán thành công";
+            
+            $message = "
+            <div style='max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;'>
+                <h2 style='color: #333; text-align: center;'>Thanh toán thành công đơn hàng</h2>
+                <div style='background-color: #f8f9fa; padding: 20px; border-radius: 5px;'>
+                    <p>Xin chào $name,</p>
+                    <p>Cảm ơn bạn đã mua hàng tại cửa hàng của chúng tôi. Đơn hàng của bạn đã được thanh toán thành công.</p>
+                    <p><strong>Mã đơn hàng:</strong> #$order_id</p>
+                    <p><strong>Tổng tiền:</strong> " . number_format($amount, 0, ',', '.') . "₫</p>
+                    <p>Trân trọng, <br>ADMIN SHOP</p>
+                </div>
+            </div>
+            ";
+    
+            return $this->sendMail($email, $subject, $message);
         } catch (Exception $e) {
             return ["status" => false, "message" => "Lỗi: " . $this->mail->ErrorInfo];
         }
     }
+    
 }

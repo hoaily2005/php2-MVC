@@ -40,9 +40,8 @@
                             </td>
                             <td><?php echo $order['created_at']; ?></td>
                             <td>
-                                <!-- Add button to delete order -->
                                 <form action="/admin/orders/delete/<?php echo $order['order_id']; ?>" method="POST" class="mt-2">
-                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-delete-left"></i></button>
+                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></i></button>
                                 </form>
                             </td>
                         </tr>

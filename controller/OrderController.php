@@ -16,11 +16,13 @@ class OrderController
 {
     private $orderModel;
     private $cartModel;
+    private $variantModel;
 
     public function __construct()
     {
         $this->orderModel = new OrderModel();
         $this->cartModel = new CartModel();
+        $this->variantModel = new ProductVariantModel();
     }
 
     public function index()
@@ -61,7 +63,6 @@ class OrderController
         $user_id = $_SESSION['users']['id'] ?? null;
         $cart_session = session_id();
 
-        // Lấy giỏ hàng từ session hoặc từ cơ sở dữ liệu
         if ($user_id) {
             $carts = $this->cartModel->getCart($user_id, $cart_session);
         } else {
@@ -96,7 +97,6 @@ class OrderController
             if ($user_id && $payment_method && $shipping_address && $total_price > 0) {
                 if ($payment_method == "cod") {
                     $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $total_price, $email, $phone, $name);
-
                     if ($isCreated) {
                         $order_id = $this->orderModel->getLastInsertId();
 
@@ -113,16 +113,21 @@ class OrderController
                         BladeServiceProvider::render("checkout/check_out", ['message' => $message, 'carts' => $carts], "Create Order");
                     }
                 } elseif ($payment_method == "vnpay") {
-                    $_SESSION['order_items'] = $carts; 
+                    foreach ($carts as $cart) {
+                        $_SESSION['order_items'] = $carts;
+                        $product_variant_id = $cart['product_variant_id'];
+                        $quantity = $cart['quantity'];
 
-                    echo '<form id="vnpayForm" action="/vnpay" method="POST">';
-                    echo '<input type="hidden" name="total_price" value="' . $total_price . '">';
-                    echo '<input type="hidden" name="name" value="' . $name . '">';
-                    echo '<input type="hidden" name="email" value="' . $email . '">';
-                    echo '<input type="hidden" name="phone" value="' . $phone . '">';
-                    echo '<input type="hidden" name="shipping_address" value="' . $shipping_address . '">';
-                    echo '</form>';
-                    echo '<script>document.getElementById("vnpayForm").submit();</script>';
+                        echo '<form id="vnpayForm" action="/vnpay" method="POST">';
+                        echo '<input type="hidden" name="total_price" value="' . $total_price . '">';
+                        echo '<input type="hidden" name="name" value="' . $name . '">';
+                        echo '<input type="hidden" name="email" value="' . $email . '">';
+                        echo '<input type="hidden" name="phone" value="' . $phone . '">';
+                        echo '<input type="hidden" name="shipping_address" value="' . $shipping_address . '">';
+                        echo '</form>';
+                        echo '<script>document.getElementById("vnpayForm").submit();</script>';
+                        $this->variantModel->decreaseStock($product_variant_id, $quantity);
+                    }
                 } elseif ($payment_method == "momo") {
                     echo '<form id="momoForm" action="/payment/momo/create" method="POST">';
                     echo '<input type="hidden" name="amount" value="' . $total_price . '">';
@@ -152,6 +157,34 @@ class OrderController
             $isUpdated = $this->orderModel->updateOrderStatus($order_id, $payment_status);
 
             if ($isUpdated) {
+                if ($payment_status == 'completed') {
+                    $orderItems = $this->orderModel->getOrderItems($order_id);
+
+                    foreach ($orderItems as $orderItem) {
+                        $variantId = $orderItem['product_variant_id'];
+                        $quantity = $orderItem['quantity'];
+
+                        $isQuantityUpdated = $this->variantModel->checkQuantity($variantId, $quantity);
+
+                        if (!$isQuantityUpdated) {
+                            $_SESSION['error'] = "Không đủ số lượng hàng để hoàn thành đơn hàng.";
+                            header("Location: /admin/orders");
+                            exit();
+                        }
+                    }
+                } elseif ($payment_status == 'failed') {
+                    $orderItems = $this->orderModel->getOrderItems($order_id);
+
+                    foreach ($orderItems as $orderItem) {
+                        $variantId = $orderItem['product_variant_id'];
+                        $quantity = $orderItem['quantity'];
+
+                        $this->variantModel->increaseQuantity($variantId, $quantity);
+                    }
+
+                    $_SESSION['success'] = "Đơn hàng đã bị hủy và số lượng đã được hoàn lại vào kho.";
+                }
+
                 $customer_email = $this->orderModel->getUserEmail($order_id);
 
                 if ($customer_email) {
@@ -174,6 +207,23 @@ class OrderController
             } else {
                 echo "Lỗi không thể cập nhập trạng thái.";
             }
+        }
+    }
+
+    public function trackOrder()
+    {
+        $order_id = $_GET['order_id'] ?? null;
+
+        if ($order_id) {
+            $order = $this->orderModel->getOrderById($order_id);
+
+            if ($order) {
+                BladeServiceProvider::render("/tracking", compact('order'), "Tracking Order");
+            } else {
+                BladeServiceProvider::render("/tracking", ['message' => 'Không tìm thấy đơn hàng với mã: ' . $order_id], "Error");
+            }
+        } else {
+            BladeServiceProvider::render("/tracking", ['message' => 'Vui lòng nhập mã đơn hàng để tra cứu.'], "Error");
         }
     }
 }

@@ -1,20 +1,20 @@
 
 <?php $__env->startSection('content'); ?>
-<h1>Variants of Product: <?= $product['name'] ?></h1>
+<h1>Chi tiết biến thể <?= $product['name'] ?></h1>
 
-<a href="/admin/products" class="btn btn-primary mb-3">Back to Product List</a>
+<a href="/admin/products" class="btn btn-primary mb-3">Quay lại trang sản phẩm <i class="fa-solid fa-arrow-left"></i></a>
 
 <div style="overflow-x: auto;">
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
-                <th>Color</th>
+                <th>Màu sắc</th>
                 <th>Size</th>
-                <th>Quantity</th>
-                <th>Price</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
                 <th>SKU</th>
-                <th>Image</th>
+                <th>Hình Ảnh</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,8 +29,8 @@
                     <td><?= $variant['sku'] ?></td>
                     <td><img src="http://localhost:8000/<?= $variant['image'] ?>" alt="<?= $variant['sku'] ?>" width="100"></td>
                     <td>
-                        <a href="/admin/products/variants/edit/<?= $variant['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="/admin/products/variants/delete/<?= $variant['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="/admin/products/variants/edit/<?= $variant['id'] ?>" class="btn btn-warning btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> |
+                        <a href="/admin/products/variants/delete/<?= $variant['id'] ?>" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
             <?php endforeach; ?>

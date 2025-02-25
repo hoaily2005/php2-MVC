@@ -138,4 +138,56 @@ class ProductVariantModel
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+
+    public function checkQuantity($variantId, $quantity)
+    {
+        $sql = "SELECT quantity FROM products_variants WHERE id = :variant_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':variant_id', $variantId);
+        $stmt->execute();
+
+        $variant = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($variant) {
+            $currentQuantity = $variant['quantity'];
+
+            if ($currentQuantity >= $quantity) {
+                $newQuantity = $currentQuantity - $quantity;
+
+                $updateSql = "UPDATE products_variants SET quantity = :new_quantity WHERE id = :variant_id";
+                $updateStmt = $this->conn->prepare($updateSql);
+                $updateStmt->bindParam(':new_quantity', $newQuantity);
+                $updateStmt->bindParam(':variant_id', $variantId);
+                $updateStmt->execute();
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    public function increaseQuantity($variantId, $quantity)
+    {
+        $sql = "UPDATE products_variants 
+            SET quantity = quantity + :quantity 
+            WHERE id = :variant_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+        $stmt->bindParam(':variant_id', $variantId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function decreaseStock($variantId, $quantity)
+    {
+        $sql = "UPDATE products_variants SET quantity = quantity - :quantity WHERE id = :variantId";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':variantId', $variantId, PDO::PARAM_INT);
+        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 }

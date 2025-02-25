@@ -152,6 +152,21 @@ class OrderModel
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':order_id', $order_id);
-        return $stmt->execute(); 
+        return $stmt->execute();
+    }
+
+    public function getOrderItems($orderId)
+    {
+        $sql = "SELECT oi.product_variant_id, oi.quantity, oi.price, pv.sku, pv.size_id, pv.color_id
+            FROM order_items oi
+            LEFT JOIN products_variants pv ON oi.product_variant_id = pv.id
+            WHERE oi.order_id = :order_id";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':order_id', $orderId, PDO::PARAM_INT);
+        $stmt->execute();
+        $orderItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $orderItems;
     }
 }

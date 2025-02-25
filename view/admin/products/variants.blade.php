@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 @section('content')
-<h1>Create Product Variants</h1>
+<h1>Thêm biến thể</h1>
 <form method="POST" enctype="multipart/form-data">
     <input type="hidden" name="product_id" value="<?= isset($product_id) ? $product_id : ''; ?>">
 
     <div class="mb-3">
-        <label for="color_id" class="form-label">Color</label>
+        <label for="color_id" class="form-label">Màu</label>
         <select name="color_id" id="color_id" class="form-control">
             <?php foreach ($colors as $color): ?>
                 <option value="<?= $color['id'] ?>" <?= isset($errors['color_id']) ? 'is-invalid' : ''; ?>><?= $color['name'] ?></option>
@@ -60,8 +60,8 @@
         <?php endif; ?>
     </div>
 
-    <button type="submit" class="btn btn-success">Create</button>
-    <a href="/admin/products" class="btn btn-danger">Back to list</a>
+    <button type="submit" class="btn btn-success">Thêm</button>
+    <a href="/admin/products" class="btn btn-danger">Quay lại trang sản phẩm <i class="fa-solid fa-arrow-left"></i></a>
 </form>
 
 <?php if (isset($_SESSION['swal'])): ?>

@@ -164,12 +164,27 @@ class UserModel
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function updateRole($id, $role)
+    public function updateRole($id, $role, $name, $phone)
     {
-        $query = "UPDATE users SET role = :role WHERE id = :id";
+        $query = "UPDATE users SET role = :role, name = :name, phone = :phone WHERE id = :id";
         $stmt = $this->conn->prepare($query);
+
         $stmt->bindParam(':role', $role);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':phone', $phone);
         $stmt->bindParam(':id', $id);
+
+        return $stmt->execute();
+    }
+
+    public function updateProfile($id, $name, $phone)
+    {
+        $query = "UPDATE users SET name = :name, phone = :phone WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':phone', $phone);
+        $stmt->bindParam(':id', $id);
+
         return $stmt->execute();
     }
 }

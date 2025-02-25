@@ -31,6 +31,7 @@ $router->addRoute("/", [$controller, "index"]);
 $router->addRoute("/products", [$productController, "index2"]);
 
 $router->addRoute("/admin", [$controller, "admin"], ['checkLogin', 'checkAdmin']);
+
 //product
 $router->addRoute("/admin/products", [$productController, "index"], ['checkLogin', 'checkUserOrAdmin']);
 $router->addRoute("/products/detail/{id}", [$productController, "show"]);
@@ -48,6 +49,7 @@ $router->addRoute("/admin/products/variants/create/{id}", [$productVariantContro
 $router->addRoute("/admin/users", [$authController, "indexUser"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/users/delete/{id}", [$authController, "delete"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/users/edit/{id}", [$authController, "editRole"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/profile/update/{id}", [$authController, "updateProfile"], ['checkLogin', 'checkUserOrAdmin']);
 
 //category
 $router->addRoute("/admin/category", [$categoryController, "index"], ['checkLogin', 'checkAdmin']);
@@ -96,12 +98,14 @@ $router->addRoute("/carts/update", [$cartController, "update"]);
 $router->addRoute("/checkout", [$orderController, "createOrder"], ['checkLogin', 'checkUserOrAdmin']);
 $router->addRoute("/vnpay", [$vnpayController, "createPayment"], ['checkLogin', 'checkUserOrAdmin']);
 $router->addRoute("/vnpay/callback", [$vnpayController, "vnpayReturn"], ['checkLogin', 'checkUserOrAdmin']);
-
 $router->addRoute("/admin/orders", [$orderController, "admin"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/orders/update/{id}", [$orderController, "updateStatus"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/orders/delete/{id}", [$orderController, "delete"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/orders", [$orderController, "index"], ['checkLogin', 'checkUserOrAdmin']);
 $router->addRoute("/orders/show/{id}", [$orderController, "show"], ['checkLogin', 'checkUserOrAdmin']);
+
+//Tracking
+$router->addRoute("/tracking", [$orderController, "trackOrder"], ['checkLogin', 'checkUserOrAdmin']);
 
 
 $router->addRoute("/unauthorized", [$authController, "unauthorized"]);

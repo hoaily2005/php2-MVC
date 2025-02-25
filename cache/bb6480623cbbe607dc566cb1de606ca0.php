@@ -4,7 +4,6 @@
     <h2 class="mb-4">Thanh toán</h2>
     <form action="/checkout" method="POST">
         <div class="row">
-            <!-- Thông tin khách hàng -->
             <div class="col-md-6">
                 <h4>Thông tin khách hàng</h4>
                 <div class="mb-3">
@@ -63,6 +62,7 @@
                             <img src="http://localhost:8000/<?php echo $cart['image']; ?>" alt="" class="img-fluid" style="width: 50px;">
                             <span><?= $cart['name'] ?></span>
                             <strong><?= number_format($subTotal, 0, ',', '.') ?>₫</strong>
+                            <span>Sl: <?= $cart['quantity'] ?></strong>
                         </li>
                     <?php endforeach; ?>
                     <?php
@@ -82,7 +82,7 @@
                     </li>
                 <?php endif; ?>
             </ul>
-            <button type="submit" class="btn btn-primary w-100">Đặt hàng <i class="fa-solid fa-bag-shopping"></i></button>
+            <button type="submit" class="btn btn-success w-100">Đặt hàng <i class="fa-solid fa-bag-shopping"></i></button>
 
         </div>
     </div>

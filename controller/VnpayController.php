@@ -82,26 +82,25 @@ class VnPayController
 
         $inputData = $_GET;
         $secureHash = $inputData['vnp_SecureHash'];
-        unset($inputData['vnp_SecureHash']); 
-        ksort($inputData); 
+        unset($inputData['vnp_SecureHash']);
+        ksort($inputData);
 
         $hashData = "";
         foreach ($inputData as $key => $value) {
             $hashData .= urlencode($key) . "=" . urlencode($value) . "&";
         }
-        $hashData = rtrim($hashData, "&"); 
-
+        $hashData = rtrim($hashData, "&");
         $checkSum = hash_hmac('sha512', $hashData, $this->vnp_HashSecret);
 
         if ($checkSum === $secureHash) {
             if ($inputData['vnp_ResponseCode'] == '00') {
                 $amount = $inputData['vnp_Amount'] / 100;
-                $order_id = $inputData['vnp_TxnRef']; 
+                $order_id = $inputData['vnp_TxnRef'];
 
                 if (isset($_SESSION['order_info'])) {
                     $user_id = $_SESSION['order_info']['user_id'];
-                    $payment_method = "vnpay"; 
-                    $payment_status = "completed"; 
+                    $payment_method = "vnpay";
+                    $payment_status = "completed";
                     $shipping_address = $_SESSION['order_info']['shipping_address'];
                     $email = $_SESSION['order_info']['email'];
                     $phone = $_SESSION['order_info']['phone'];
@@ -110,7 +109,7 @@ class VnPayController
                     $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $amount, $email, $phone, $name);
 
                     if ($isCreated) {
-                        $order_id = $this->orderModel->getLastInsertId(); 
+                        $order_id = $this->orderModel->getLastInsertId();
 
                         if (isset($_SESSION['order_items']) && !empty($_SESSION['order_items'])) {
                             $order_items = $_SESSION['order_items'];
@@ -120,14 +119,17 @@ class VnPayController
                                 $quantity = $item['quantity'];
                                 $this->orderModel->addOrderItem($order_id, $sku, $price, $quantity);
                             }
+
                             $this->cartModel->clearCart($user_id, session_id());
-                            unset($_SESSION['order_items']); 
-                            
-                            //Gửi mail thanh toán thành công
-                            $this ->mail->sendMailSuccess($email, "Thanh Toán Thành Công", $name, $order_id, $amount);
+                            unset($_SESSION['order_items']);
+
+                            $this->mail->sendMailSuccess($email, $name, $order_id, $amount);
+
+                            // Gửi email chi tiết nếu cần
+                            // $this->mail->sendMail($email, $emailSubject, $emailBody);
 
                             BladeServiceProvider::render("order_success", [
-                                'message' => 'Giao dịch thanh công!',
+                                'message' => 'Giao dịch thành công!',
                                 'order_id' => $order_id,
                                 'total_price' => $amount
                             ], "Order Success");

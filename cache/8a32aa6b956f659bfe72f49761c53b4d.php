@@ -1,4 +1,5 @@
 
+
 <?php $__env->startSection('content'); ?>
 <br>
 <div class="container-fluid">
@@ -7,91 +8,89 @@
         <div class="col-md-2">
             <h2 class="my-4" style="color: brown;">Bộ lọc</h2>
             <div class="mb-4">
+                <!-- Lọc theo danh mục -->
                 <div class="mb-3">
-                    <label class= "form-label">Danh mục</label><br>
-                    <input type="radio" name="category" id="categoryAll" value="" checked>
-                    <label for="categoryAll">Tất cả danh mục</label><br>
-                    <input type="radio" name="category" id="category1" value="1">
-                    <label for="category1">Danh mục 1</label><br>
-                    <input type="radio" name="category" id="category2" value="2">
-                    <label for="category2">Danh mục 2</label><br>
-                    <input type="radio" name="category" id="category3" value="3">
-                    <label for="category3">Danh mục 3</label>
+                    <form action="" method="GET">
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục</label><br>
+                            <input type="radio" name="category" value="" <?php echo e(!isset($_GET['category']) ? 'checked' : ''); ?>> Tất cả danh mục<br>
+                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <input type="radio" name="category" value="<?php echo e($category['id']); ?>" <?php echo e(isset($_GET['category']) && $_GET['category'] == $category['id'] ? 'checked' : ''); ?>> <?php echo e($category['name']); ?><br>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <label class="form-label">Mức giá:</label><br>
+                            <input type="radio" name="price" value="" <?php echo e(!isset($_GET['price']) ? 'checked' : ''); ?>> Tất cả mức giá<br>
+                            <input type="radio" name="price" value="0-500000" <?php echo e(isset($_GET['price']) && $_GET['price'] == '0-500000' ? 'checked' : ''); ?>> Dưới 500k<br>
+                            <input type="radio" name="price" value="500000-1000000" <?php echo e(isset($_GET['price']) && $_GET['price'] == '500000-1000000' ? 'checked' : ''); ?>> 500k - 1Tr<br>
+                            <input type="radio" name="price" value="1000000-2000000" <?php echo e(isset($_GET['price']) && $_GET['price'] == '1000000-2000000' ? 'checked' : ''); ?>> 1TR - 2Tr<br>
+                            <input type="radio" name="price" value="2000000-" <?php echo e(isset($_GET['price']) && $_GET['price'] == '2000000-' ? 'checked' : ''); ?>> Trên 2TR<br>
+                        </div>
+                    
+                        <input type="submit" value="Lọc" class="btn btn-primary w-100">
+                    </form>
+                    
                 </div>
-                <div class="mb-3">
-                    <label class= "form-label">Mức giá:</label><br>
-                    <input type="radio" name="price" id="priceAll" value="" checked>
-                    <label for="priceAll">Tất cả mức giá</label><br>
-                    <input type="radio" name="price" id="price0-500000" value="0-500000">
-                    <label for="price0-500000">Dưới 500k</label><br>
-                    <input type="radio" name="price" id="price500000-1000000" value="500000-1000000">
-                    <label for="price500000-1000000">500k - 1Tr</label><br>
-                    <input type="radio" name="price" id="price1000000-2000000" value="1000000-2000000">
-                    <label for="price1000000-2000000">1TR - 2Tr</label><br>
-                    <input type="radio" name="price" id="price2000000" value="2000000-">
-                    <label for="price2000000">Trên 2TR</label>
-                </div>
-                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Tìm kiếm sản phẩm...">
-                <button id="filterButton" class="btn btn-primary w-100">Lọc</button>
             </div>
         </div>
 
-        <!-- Danh sách sản phẩm bên phải -->
         <div class="col-md-10">
             <div class="row" id="productList">
-                <?php foreach ($products as $index => $product): ?>
-                    <div class="col-md-4 mt-3">
-                        <div class="card shadow-sm rounded">
-                            <img src="<?= $product['image'] ?>" alt="<?= $product['name'] ?>" class="card-img-top" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title"><?= $product['name'] ?></h5>
-                                <p class="card-text">Số lượng: <?= $product['quantity'] ?></p>
-                                <p class="card-text text-danger"><strong><?= number_format($product['price'], 0, ',', '.') ?> VND</strong></p>
-                                <a href="/products/detail/<?= $product['id'] ?>" class="btn btn-primary btn-sm w-100">Xem Chi Tiết</a>
+                <?php if(empty($products) || count($products) == 0): ?>
+                    <div class="col-12">
+                        <p class="text-center">Không có sản phẩm phù hợp với bộ lọc của bạn.</p>
+                    </div>
+                <?php else: ?>
+                    <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="col-md-4 mt-3">
+                            <div class="card shadow-sm rounded">
+                                <img src="<?php echo e(asset($product['image'])); ?>" alt="<?php echo e($product['name']); ?>" class="card-img-top" style="height: 250px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo e($product['name']); ?></h5>
+                                    <p class="card-text">Số lượng: <?php echo e($product['quantity']); ?></p>
+                                    <p class="card-text text-danger"><strong><?php echo e(number_format($product['price'], 0, ',', '.')); ?> VND</strong></p>
+                                    <a href="/products/detail/<?php echo e($product['id']); ?>" class="btn btn-primary btn-sm w-100">Xem Chi Tiết</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <?php if (($index + 1) % 3 == 0): ?>
-                        </div>
-                        <div class="row mt-4">
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                        <?php if(($index + 1) % 3 == 0): ?>
+                            </div>
+                            <div class="row mt-4">
+                        <?php endif; ?>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
+
 <style>
-    /* Định dạng phần chứa bộ lọc */
 .container-fluid .col-md-2 {
     background-color: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
 }
 
-/* Định dạng tiêu đề bộ lọc */
 .container-fluid .col-md-2 h2 {
     font-size: 20px;
     font-weight: bold;
 }
 
-/* Định dạng radio button */
 input[type="radio"] {
     margin-right: 10px;
 }
 
-/* Định dạng label cho radio button */
 label {
     margin-right: 20px;
     font-size: 14px;
 }
 
-/* Định dạng nút Lọc */
 #filterButton {
     background-color: brown;
     border-color: brown;
 }
 
-/* Định dạng các phần tử khác */
 .mb-3 {
     margin-bottom: 15px;
 }

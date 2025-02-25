@@ -17,11 +17,11 @@
                 <div class="card shadow-sm rounded">
                     <img src="<?= $product['image'] ?>" alt="<?= $product['name'] ?>" class="card-img-top" style="height: 250px; object-fit: cover;">
                     <div class="card-body">
-                        <h5 class="card-title"><?= $product['name'] ?></h5>
+                        <h5 class="card-title" style="font-size: 16px;"><?= $product['name'] ?></h5>
                         <!-- <p class="card-text text-muted"><?= $product['description'] ?></p> -->
                         <p class="card-text">Số lượng: <?= $product['quantity'] ?></p>
                         <p class="card-text text-danger"><strong><?= number_format($product['price'], 0, ',', '.') ?> VND</strong></p>
-                        <a href="/products/detail/<?= $product['id'] ?>" class="btn btn-primary btn-sm w-100">Xem Chi Tiết</a>
+                        <a href="/products/detail/<?= $product['id'] ?>" class="btn btn-primary btn-sm w-100">XEM NGAY</a>
                     </div>
                 </div>
             </div>

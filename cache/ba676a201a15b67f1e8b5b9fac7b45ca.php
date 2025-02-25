@@ -18,8 +18,8 @@
             <td><?= $category['description'] ?></td>
             <td>
                 <!-- <a href="/category/<?= $category['id'] ?>" class="btn btn-info btn-sm">View</a> -->
-                <a href="/admin/category/edit/<?= $category['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="/admin/category/delete/<?= $category['id'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                <a href="/admin/category/edit/<?= $category['id'] ?>" class="btn btn-warning btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> |
+                <a href="/admin/category/delete/<?= $category['id'] ?>" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
             </td>
         </tr>
         <?php endforeach; ?>

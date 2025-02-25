@@ -20,36 +20,33 @@
                 <div class="form-group mb-4">
                     <label class="d-block mb-2"><strong>Chọn màu</strong></label>
                     <div id="color-buttons" class="d-flex flex-wrap gap-2" role="group" aria-label="Color select">
-                        <?php foreach ($variants as $variant): ?>
-                            <div class="color-option">
-                                <input type="radio" id="color-<?= $variant['id'] ?>" name="color" class="btn-check"
-                                    data-color="<?= $variant['color_name'] ?>" data-price="<?= $variant['price'] ?>"
-                                    data-size="<?= $variant['size_name'] ?>" data-sku="<?= $variant['sku'] ?>"
-                                    data-quantity="<?= $variant['quantity'] ?>"
-                                    data-image="http://localhost:8000/<?= $variant['image'] ?>" />
-                                <label class="color-label" for="color-<?= $variant['id'] ?>">
-                                    <span class="color-name"><?= $variant['color_name'] ?></span>
-                                </label>
-                            </div>
+                        <?php 
+                            $uniqueColors = array_unique(array_column($variants, 'color_name')); // Lọc các màu sắc duy nhất
+                            foreach ($uniqueColors as $color): ?>
+                                <div class="color-option">
+                                    <input type="radio" id="color-<?= $color ?>" name="color" class="btn-check" data-color="<?= $color ?>" />
+                                    <label class="color-label" for="color-<?= $color ?>">
+                                        <span class="color-name"><?= $color ?></span>
+                                    </label>
+                                </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
+
 
                 <!-- Chọn Size -->
                 <div class="form-group mb-4">
                     <label class="d-block mb-2"><strong>Chọn Size</strong></label>
                     <div id="size-buttons" class="d-flex flex-wrap gap-2" role="group" aria-label="Size select">
-                        <?php foreach ($variants as $variant): ?>
-                            <div class="size-option">
-                                <input type="radio" id="size-<?= $variant['id'] ?>" name="size" class="btn-check"
-                                    data-color="<?= $variant['color_name'] ?>" data-price="<?= $variant['price'] ?>"
-                                    data-size="<?= $variant['size_name'] ?>" data-sku="<?= $variant['sku'] ?>"
-                                    data-quantity="<?= $variant['quantity'] ?>"
-                                    data-image="http://localhost:8000/<?= $variant['image'] ?>" />
-                                <label class="size-label" for="size-<?= $variant['id'] ?>">
-                                    <?= $variant['size_name'] ?>
-                                </label>
-                            </div>
+                        <?php 
+                            $uniqueSizes = array_unique(array_column($variants, 'size_name')); // Lọc các size duy nhất
+                            foreach ($uniqueSizes as $size): ?>
+                                <div class="size-option">
+                                    <input type="radio" id="size-<?= $size ?>" name="size" class="btn-check" data-size="<?= $size ?>" />
+                                    <label class="size-label" for="size-<?= $size ?>">
+                                        <?= $size ?>
+                                    </label>
+                                </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -98,6 +95,23 @@
             </div>
         </div>
     </div>
+</div>
+
+
+<h4 class="mt-4">Sản phẩm liên quan</h4>
+<div class="row">
+    @foreach ($relatedProducts as $relatedProduct)
+        <div class="col-md-3">
+            <div class="card">
+                <img src="http://localhost:8000/{{ $relatedProduct['image'] }}" class="card-img-top" alt="{{ $relatedProduct['name'] }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ $relatedProduct['name'] }}</h5>
+                    <p class="card-text">{{ number_format($relatedProduct['price'], 0, ',', '.') }} đ</p>
+                    <a href="/products/detail/{{ $relatedProduct['id'] }}" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    @endforeach
 </div>
 
 <script>

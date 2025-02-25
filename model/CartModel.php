@@ -12,17 +12,17 @@ class CartModel
     }
 
     public function getCart($user_id, $session_id)
-    {
-        if (!empty($user_id)) {
-            $condition = "carts.user_id = :user_id";
-        } else {
-            $condition = "carts.cart_session = :cart_session";
-        }
+{
+    if (!empty($user_id)) {
+        $condition = "carts.user_id = :user_id";
+    } else {
+        $condition = "carts.cart_session = :cart_session";
+    }
 
-        $query = "SELECT carts.*, 
+    $query = "SELECT carts.*, 
                      products.name, 
                      products.image,
-                    --  products.id,
+                     products_variants.id AS product_variant_id, -- Add product_variant_id
                      sizes.name AS size_name, 
                      colors.name AS color_name
               FROM carts
@@ -32,17 +32,18 @@ class CartModel
               INNER JOIN colors ON products_variants.color_id = colors.id
               WHERE $condition";
 
-        $stmt = $this->conn->prepare($query);
+    $stmt = $this->conn->prepare($query);
 
-        if (!empty($user_id)) {
-            $stmt->bindParam(':user_id', $user_id);
-        } else {
-            $stmt->bindParam(':cart_session', $session_id);
-        }
-
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($user_id)) {
+        $stmt->bindParam(':user_id', $user_id);
+    } else {
+        $stmt->bindParam(':cart_session', $session_id);
     }
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 
     public function addCart($user_id, $cart_session, $sku, $quantity, $price)
