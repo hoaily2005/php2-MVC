@@ -1,16 +1,26 @@
 <?php
-class Database {
-    private $host = "127.0.0.1";
-    private $db_name = "php2025";
-    private $username = "root";
-    private $password = "";
-    public $conn;
+session_start();
+require_once 'env.php';
 
-    public function getConnection() {
+class Database
+{
+    protected $conn;
+
+    public function __construct()
+    {
+        loadEnv();
+    }
+
+    public function getConnection()
+    {
         $this->conn = null;
 
         try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
+            $this->conn = new PDO(
+                "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'],
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASS']
+            );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $exception) {
             echo "Connection error: " . $exception->getMessage();
@@ -19,4 +29,3 @@ class Database {
         return $this->conn;
     }
 }
-?>
