@@ -62,11 +62,13 @@
                 </nav>
 
                 <!-- Search Bar -->
-                <form class="d-flex me-3 search-bar" action="#" method="GET">
-                    <input class="form-control me-2" type="search" name="query" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+                <form class="d-flex me-3 search-bar" action="/products" method="GET">
+                    <input class="form-control me-2" type="search" name="query" id="search-query" placeholder="Tìm kiếm sản phẩm..." aria-label="Search" autocomplete="off">
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
                 </form>
-
+                <div id="search-suggestions" class="search-suggestions"></div>
+                
+                
                 <!-- User & Cart Section -->
                 <div class="d-flex align-items-center user-section">
                     <a href="/carts" class="btn btn-outline-primary me-3 cart-btn">
@@ -144,9 +146,45 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('search-query').addEventListener('input', function() {
+            let query = this.value;
+
+            if (query.length >= 2) {
+                fetch('/search-suggestions?q=' + query)
+                    .then(response => response.json())
+                    .then(data => {
+                        let suggestionsBox = document.getElementById('search-suggestions');
+                        suggestionsBox.innerHTML = '';  
+
+                        if (data.suggestions.length > 0) {
+                            suggestionsBox.classList.add('show');  
+                            data.suggestions.forEach(suggestion => {
+                                let suggestionItem = document.createElement('div');
+                                suggestionItem.classList.add('suggestion-item');
+                                suggestionItem.textContent = suggestion.name;  
+
+                                suggestionItem.dataset.id = suggestion.id; 
+
+                                suggestionItem.addEventListener('click', function() {
+                                    window.location.href = "/products/detail/" + suggestionItem.dataset.id;
+                                });
+
+                                suggestionsBox.appendChild(suggestionItem);
+                            });
+                        } else {
+                            suggestionsBox.innerHTML = '<div class="no-results">Không tìm thấy kết quả</div>';
+                            suggestionsBox.classList.add('show');  
+                        }
+                    });
+            } else {
+                document.getElementById('search-suggestions').classList.remove('show'); 
+            }
+        });
+    </script>
 </body>
 <style>
-    /* General Styles */
+
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -282,7 +320,6 @@ header {
     text-align: center;
 }
 
-/* Dropdown Menu */
 .dropdown-menu {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -300,7 +337,6 @@ header {
     color: white;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .navbar-nav {
         flex-direction: column;
@@ -331,6 +367,51 @@ header {
         margin: 5px 0;
     }
 }
+
+/* Tạo kiểu cho phần gợi ý tìm kiếm */
+#search-suggestions {
+    position: absolute;
+    top: 50px; /* Đặt cách xa ô tìm kiếm */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-top: none;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000; /* Đảm bảo gợi ý xuất hiện trên các phần tử khác */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    display: none; /* Ẩn khi không có gợi ý */
+}
+
+/* Khi có gợi ý, hiển thị */
+#search-suggestions.show {
+    display: block;
+}
+
+/* Kiểu dáng cho mỗi item gợi ý */
+.suggestion-item {
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Hiệu ứng hover cho gợi ý */
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Nếu không tìm thấy kết quả */
+.no-results {
+    padding: 10px;
+    font-size: 14px;
+    color: #999;
+    text-align: center;
+}
+
 </style>
 
 </html>

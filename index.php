@@ -9,6 +9,9 @@ require_once "controller/ProductVariantController.php";
 require_once "controller/CartController.php";
 require_once "controller/OrderController.php";
 require_once "controller/VnpayController.php";
+require_once "controller/RatingController.php";
+require_once "controller/CouponController.php";
+require_once "controller/AddressController.php";
 require_once "router/Router.php";
 require_once "middleware.php";
 
@@ -22,6 +25,9 @@ $productVariantController = new ProductVariantController();
 $cartController = new CartController();
 $orderController = new OrderController();
 $vnpayController = new VnpayController();
+$ratingController = new RatingController();
+$couponController = new CouponController();
+$addressController = new AddressController();
 $controller = new Controller();
 
 $router->addMiddleware('logRequest');
@@ -38,6 +44,11 @@ $router->addRoute("/products/detail/{id}", [$productController, "show"]);
 $router->addRoute("/admin/products/create", [$productController, "create"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/products/edit/{id}", [$productController, "edit"], ['checkLogin', 'checkAdmin']);
 $router->addRoute("/admin/products/delete/{id}", [$productController, "delete"], ['checkLogin', 'checkAdmin']);
+
+
+// Route tìm kiếm sản phẩm
+$router->addRoute("/search-suggestions", [$productController, "searchSuggestions"]);
+
 
 //Product Variant
 $router->addRoute("/admin/variants/detail/{id}", [$productVariantController, "show"], ['checkLogin', 'checkUserOrAdmin']);
@@ -106,6 +117,20 @@ $router->addRoute("/orders/show/{id}", [$orderController, "show"], ['checkLogin'
 
 //Tracking
 $router->addRoute("/tracking", [$orderController, "trackOrder"], ['checkLogin', 'checkUserOrAdmin']);
+
+//Rating
+$router->addRoute("/ratings/create", [$ratingController, "addRating"], ['checkLogin', 'checkUserOrAdmin']);
+
+//coupons
+$router->addRoute("/admin/coupons", [$couponController, "index"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/admin/coupons/create", [$couponController, "create"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/admin/coupons/edit/{id}", [$couponController, "edit"], ['checkLogin', 'checkAdmin']);
+$router->addRoute("/admin/coupons/delete/{id}", [$couponController, "delete"], ['checkLogin', 'checkAdmin']);
+
+//address 
+$router->addRoute("/addresses", [$addressController, "index"], ['checkLogin']);
+$router->addRoute("/profile/address/add", [$addressController, "create"], ['checkLogin']);
+$router->addRoute("/profile/address/edit/{id}", [$addressController, "edit"], ['checkLogin']);
 
 
 $router->addRoute("/unauthorized", [$authController, "unauthorized"]);

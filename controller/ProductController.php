@@ -6,6 +6,7 @@ require_once "model/ProductModel.php";
 require_once "model/ProductVariantModel.php";
 require_once "view/helpers.php";
 require_once "model/CategoryModel.php";
+require_once "model/RatingModel.php";
 require_once 'core/BladeServiceProvider.php';
 
 class ProductController
@@ -13,12 +14,14 @@ class ProductController
     private $productModel;
     private $variantModel;
     private $categoryModel;
+    private $ratingModel;
 
     public function __construct()
     {
         $this->productModel = new ProductModel();
         $this->variantModel = new ProductVariantModel();
         $this->categoryModel = new CategoryModel();
+        $this->ratingModel = new RatingModel();
     }
 
     public function index()
@@ -28,18 +31,19 @@ class ProductController
         //compact: gom bien dien thanh array
         BladeServiceProvider::render("admin/products/index", compact('products', 'title'), 'Product list', 'admin');
     }
-    
+
     public function index2()
     {
         $categoryId = $_GET['category'] ?? '';
         $priceRange = $_GET['price'] ?? '';
+        $sort = $_GET['sort'] ?? '';
 
-        $products = $this->productModel->getProductsFitter($categoryId, $priceRange);
-
+        $products = $this->productModel->getProductsFitter($categoryId, $priceRange, $sort);
         $categories = $this->categoryModel->getAllCategories();
 
         BladeServiceProvider::render("product", compact('products', 'categories'));
     }
+
 
     public function indexHome()
     {
@@ -51,13 +55,23 @@ class ProductController
     {
         $title = "Product Detail";
         $products = $this->productModel->getProductById($id);
+
         $variants = $this->variantModel->getProductVariantsByProductId($id);
 
         $categoryId = $products['category_id'];
-
         $relatedProducts = $this->productModel->getProductsByCategory($categoryId);
 
-        BladeServiceProvider::render("product_detail", compact('products', 'variants', 'relatedProducts', 'title'), "Chi tiết sản phẩm");
+        $ratings = $this->ratingModel->getRatingsByProduct($id);
+        $averageRating = $this->ratingModel->getAverageRating($id);
+
+        BladeServiceProvider::render("product_detail", compact(
+            'products',
+            'variants',
+            'relatedProducts',
+            'ratings',
+            'averageRating',
+            'title'
+        ), "Chi tiết sản phẩm");
     }
 
 
@@ -197,5 +211,28 @@ class ProductController
             $errors['quantity'] = "Vui lòng nhập số lượng sản phẩm";
         }
         return $errors;
+    }
+
+    public function searchSuggestions()
+    {
+        $query = $_GET['q'] ?? '';
+
+        if (strlen($query) >= 2) {
+            $products = $this->productModel->getSuggestions($query);
+            $suggestions = array_map(function ($product) {
+                return [
+                    'name' => $product['name'],
+                    'id' => $product['id']
+                ];
+            }, $products);
+
+            header('Content-Type: application/json');
+            echo json_encode(['suggestions' => $suggestions]);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['suggestions' => []]);
+        exit;
     }
 }

@@ -190,4 +190,6 @@ class ProductVariantModel
 
         return $stmt->execute();
     }
+
+    
 }

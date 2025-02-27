@@ -8,6 +8,8 @@ require_once "model/ProductVariantModel.php";
 require_once "model/CartModel.php";
 require_once "view/helpers.php";
 require_once "model/OrderModel.php";
+require_once "model/AddressModel.php";
+require_once "model/CouponModel.php";
 require_once 'core/BladeServiceProvider.php';
 require_once "mail/mailler.php";
 
@@ -17,12 +19,16 @@ class OrderController
     private $orderModel;
     private $cartModel;
     private $variantModel;
+    private $couponModel;
+    private $addressModel;
 
     public function __construct()
     {
         $this->orderModel = new OrderModel();
         $this->cartModel = new CartModel();
         $this->variantModel = new ProductVariantModel();
+        $this->couponModel = new CouponModel();
+        $this->addressModel = new AddressModel();
     }
 
     public function index()
@@ -60,86 +66,128 @@ class OrderController
 
     public function createOrder()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $user_id = $_SESSION['users']['id'] ?? null;
         $cart_session = session_id();
 
-        if ($user_id) {
-            $carts = $this->cartModel->getCart($user_id, $cart_session);
-        } else {
-            $carts = $this->cartModel->getCart(null, $cart_session);
+        if (!$user_id) {
+            $_SESSION['error'] = "Vui lòng đăng nhập để thanh toán.";
+            header("Location: /login");
+            exit();
         }
 
+        $carts = $this->cartModel->getCart($user_id, $cart_session);
         $totalPrice = 0;
         foreach ($carts as $cart) {
             $totalPrice += $cart['price'] * $cart['quantity'];
         }
 
+        $addresses = $this->addressModel->getAllAddress($user_id);
+        $user = $_SESSION['users'];
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $coupon_code = $_POST['coupon_code'] ?? '';
+            $discount = 0;
+            $error = '';
+
+            if (!empty($coupon_code)) {
+                $coupon = $this->couponModel->getCoupon($coupon_code);
+                if ($coupon) {
+                    if (strtotime($coupon['expiry_date']) < time()) {
+                        $error = "Mã giảm giá đã hết hạn!";
+                    } elseif ($coupon['used_count'] >= $coupon['usage_limit']) {
+                        $error = "Mã giảm giá đã hết lượt sử dụng!";
+                    } else {
+                        if ($coupon['discount_type'] == 'fixed') {
+                            $discount = $coupon['discount'];
+                        } elseif ($coupon['discount_type'] == 'percent') {
+                            $discount = $totalPrice * ($coupon['discount'] / 100);
+                        }
+                    }
+                } else {
+                    $error = "Mã giảm giá không hợp lệ!";
+                }
+            }
+
+            $totalPrice -= $discount;
+
             $payment_method = $_POST['payment_method'] ?? null;
             $payment_status = $_POST['payment_status'] ?? 'Pending';
-            $shipping_address = $_POST['address'] ?? null;
-            $total_price = $_POST['total_price'] ?? $totalPrice;
+            $address_id = $_POST['address_id'] ?? '';
             $email = $_POST['email'] ?? null;
             $phone = $_POST['phone'] ?? null;
             $name = $_POST['name'] ?? null;
 
-            $_SESSION['order_info'] = [
-                'user_id' => $user_id,
-                'payment_method' => $payment_method,
-                'payment_status' => $payment_status,
-                'shipping_address' => $shipping_address,
-                'total_price' => $total_price,
-                'email' => $email,
-                'phone' => $phone,
-                'name' => $name
-            ];
+            if (empty($address_id)) {
+                $shipping_address = $_POST['address'] ?? null;
+                if (empty($name) || empty($phone) || empty($shipping_address)) {
+                    $_SESSION['error'] = "Vui lòng điền đầy đủ thông tin giao hàng.";
+                    header('Location: /checkout');
+                    exit;
+                }
+            } else {
+                $selected_address = array_filter($addresses, fn($addr) => $addr['id'] == $address_id);
+                $selected_address = reset($selected_address);
+                if (!$selected_address) {
+                    $_SESSION['error'] = "Địa chỉ không hợp lệ.";
+                    header('Location: checkout/check_out');
+                    exit;
+                }
+                $name = $selected_address['full_name'];
+                $phone = $selected_address['phone'];
+                $shipping_address = $selected_address['address'];
+            }
 
-            if ($user_id && $payment_method && $shipping_address && $total_price > 0) {
+            if ($payment_method && $shipping_address && $totalPrice > 0) {
                 if ($payment_method == "cod") {
-                    $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $total_price, $email, $phone, $name);
+                    $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $totalPrice, $email, $phone, $name);
                     if ($isCreated) {
                         $order_id = $this->orderModel->getLastInsertId();
-
                         foreach ($carts as $cart) {
                             $this->orderModel->addOrderItem($order_id, $cart['sku'], $cart['price'], $cart['quantity']);
                         }
-
                         $this->cartModel->clearCart($user_id);
-
                         $message = "Đơn hàng đã được tạo thành công!";
                         BladeServiceProvider::render("order_success", ['message' => $message], "Order Success");
                     } else {
-                        $message = "Không thể tạo đơn hàng.";
-                        BladeServiceProvider::render("checkout/check_out", ['message' => $message, 'carts' => $carts], "Create Order");
+                        $_SESSION['error'] = "Không thể tạo đơn hàng.";
+                        header('Location: checkout/check_out');
                     }
                 } elseif ($payment_method == "vnpay") {
-                    foreach ($carts as $cart) {
-                        $_SESSION['order_items'] = $carts;
-                        $product_variant_id = $cart['product_variant_id'];
-                        $quantity = $cart['quantity'];
-
-                        echo '<form id="vnpayForm" action="/vnpay" method="POST">';
-                        echo '<input type="hidden" name="total_price" value="' . $total_price . '">';
-                        echo '<input type="hidden" name="name" value="' . $name . '">';
-                        echo '<input type="hidden" name="email" value="' . $email . '">';
-                        echo '<input type="hidden" name="phone" value="' . $phone . '">';
-                        echo '<input type="hidden" name="shipping_address" value="' . $shipping_address . '">';
-                        echo '</form>';
-                        echo '<script>document.getElementById("vnpayForm").submit();</script>';
-                        $this->variantModel->decreaseStock($product_variant_id, $quantity);
-                    }
+                    $_SESSION['order_info'] = [
+                        'user_id' => $user_id,
+                        'payment_method' => $payment_method,
+                        'payment_status' => $payment_status,
+                        'shipping_address' => $shipping_address,
+                        'total_price' => $totalPrice,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'name' => $name,
+                        'carts' => $carts
+                    ];
+                    echo '<form id="vnpayForm" action="/vnpay" method="POST">';
+                    echo '<input type="hidden" name="total_price" value="' . $totalPrice . '">';
+                    echo '<input type="hidden" name="name" value="' . htmlspecialchars($name) . '">';
+                    echo '<input type="hidden" name="email" value="' . htmlspecialchars($email) . '">';
+                    echo '<input type="hidden" name="phone" value="' . htmlspecialchars($phone) . '">';
+                    echo '<input type="hidden" name="shipping_address" value="' . htmlspecialchars($shipping_address) . '">';
+                    echo '</form>';
+                    echo '<script>document.getElementById("vnpayForm").submit();</script>';
                 } elseif ($payment_method == "momo") {
                     echo '<form id="momoForm" action="/payment/momo/create" method="POST">';
-                    echo '<input type="hidden" name="amount" value="' . $total_price . '">';
+                    echo '<input type="hidden" name="amount" value="' . $totalPrice . '">';
                     echo '</form>';
                     echo '<script>document.getElementById("momoForm").submit();</script>';
                 }
             } else {
-                $message = "Vui lòng điền đầy đủ thông tin!";
-                BladeServiceProvider::render("checkout/check_out", ['message' => $message, 'carts' => $carts], "Create Order");
+                $_SESSION['error'] = "Vui lòng điền đầy đủ thông tin!";
+                header('Location: checkout/check_out');
             }
         } else {
-            BladeServiceProvider::render("checkout/check_out", ['carts' => $carts], "Create Order");
+            BladeServiceProvider::render("checkout/check_out", compact('carts', 'totalPrice', 'addresses', 'user'), "Checkout");
         }
     }
 
@@ -224,6 +272,46 @@ class OrderController
             }
         } else {
             BladeServiceProvider::render("/tracking", ['message' => 'Vui lòng nhập mã đơn hàng để tra cứu.'], "Error");
+        }
+    }
+    public function process()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user_id = $_SESSION['user']['id'];
+            $payment_method = $_POST['payment_method'] ?? 'cod';
+            $address_id = $_POST['address_id'] ?? '';
+
+            if (empty($address_id)) {
+                // Use manual input if no address is selected
+                $full_name = $_POST['name'] ?? '';
+                $phone = $_POST['phone'] ?? '';
+                $address = $_POST['address'] ?? '';
+                if (empty($full_name) || empty($phone) || empty($address)) {
+                    $_SESSION['error'] = "Vui lòng điền đầy đủ thông tin giao hàng.";
+                    header('Location: /checkout');
+                    exit;
+                }
+            } else {
+                // Use selected address from database
+                $addresses = $this->addressModel->getAllAddress($user_id);
+                $selected_address = array_filter($addresses, fn($addr) => $addr['id'] == $address_id);
+                $selected_address = reset($selected_address);
+                if (!$selected_address) {
+                    $_SESSION['error'] = "Địa chỉ không hợp lệ.";
+                    header('Location: /checkout');
+                    exit;
+                }
+                $full_name = $selected_address['full_name'];
+                $phone = $selected_address['phone'];
+                $address = $selected_address['address'];
+            }
+
+            // Process the order (e.g., save to database)
+            // Example: $this->orderModel->create($user_id, $full_name, $phone, $address, $payment_method, $carts, $totalPrice);
+
+            $_SESSION['success'] = "Đơn hàng đã được đặt thành công!";
+            header('Location: /order/success');
+            exit;
         }
     }
 }

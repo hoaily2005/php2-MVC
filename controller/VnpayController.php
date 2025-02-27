@@ -74,89 +74,97 @@ class VnPayController
     }
 
     public function vnpayReturn()
-    {
-        if (!isset($_GET['vnp_SecureHash']) || !isset($_GET['vnp_ResponseCode'])) {
-            echo "Thiếu thông tin cần thiết từ VNPAY!";
-            return;
-        }
+{
+    // Kiểm tra thông tin trả về từ VNPay
+    if (!isset($_GET['vnp_SecureHash']) || !isset($_GET['vnp_ResponseCode'])) {
+        echo "Thiếu thông tin cần thiết từ VNPAY!";
+        return;
+    }
 
-        $inputData = $_GET;
-        $secureHash = $inputData['vnp_SecureHash'];
-        unset($inputData['vnp_SecureHash']);
-        ksort($inputData);
+    $inputData = $_GET;
+    $secureHash = $inputData['vnp_SecureHash'];
+    unset($inputData['vnp_SecureHash']);
+    ksort($inputData);
 
-        $hashData = "";
-        foreach ($inputData as $key => $value) {
-            $hashData .= urlencode($key) . "=" . urlencode($value) . "&";
-        }
-        $hashData = rtrim($hashData, "&");
-        $checkSum = hash_hmac('sha512', $hashData, $this->vnp_HashSecret);
+    $hashData = "";
+    foreach ($inputData as $key => $value) {
+        $hashData .= urlencode($key) . "=" . urlencode($value) . "&";
+    }
+    $hashData = rtrim($hashData, "&");
+    $checkSum = hash_hmac('sha512', $hashData, $this->vnp_HashSecret);
 
-        if ($checkSum === $secureHash) {
-            if ($inputData['vnp_ResponseCode'] == '00') {
-                $amount = $inputData['vnp_Amount'] / 100;
-                $order_id = $inputData['vnp_TxnRef'];
+    // Kiểm tra checksum hợp lệ
+    if ($checkSum === $secureHash) {
+        if ($inputData['vnp_ResponseCode'] == '00') {
+            $amount = $inputData['vnp_Amount'] / 100;
+            $order_id = $inputData['vnp_TxnRef'];
 
-                if (isset($_SESSION['order_info'])) {
-                    $user_id = $_SESSION['order_info']['user_id'];
-                    $payment_method = "vnpay";
-                    $payment_status = "completed";
-                    $shipping_address = $_SESSION['order_info']['shipping_address'];
-                    $email = $_SESSION['order_info']['email'];
-                    $phone = $_SESSION['order_info']['phone'];
-                    $name = $_SESSION['order_info']['name'];
+            // Kiểm tra giỏ hàng trong session
+            if (isset($_SESSION['order_info'])) {
+                // Thực hiện các bước xử lý đơn hàng
+                $user_id = $_SESSION['order_info']['user_id'];
+                $payment_method = "vnpay";
+                $payment_status = "completed";
+                $shipping_address = $_SESSION['order_info']['shipping_address'];
+                $email = $_SESSION['order_info']['email'];
+                $phone = $_SESSION['order_info']['phone'];
+                $name = $_SESSION['order_info']['name'];
 
-                    $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $amount, $email, $phone, $name);
+                // Tạo đơn hàng và lưu vào cơ sở dữ liệu
+                $isCreated = $this->orderModel->createOrder($user_id, $payment_method, $payment_status, $shipping_address, $amount, $email, $phone, $name);
 
-                    if ($isCreated) {
-                        $order_id = $this->orderModel->getLastInsertId();
+                if ($isCreated) {
+                    // Lấy ID của đơn hàng vừa tạo
+                    $order_id = $this->orderModel->getLastInsertId();
 
-                        if (isset($_SESSION['order_items']) && !empty($_SESSION['order_items'])) {
-                            $order_items = $_SESSION['order_items'];
-                            foreach ($order_items as $item) {
-                                $sku = $item['sku'];
-                                $price = $item['price'];
-                                $quantity = $item['quantity'];
-                                $this->orderModel->addOrderItem($order_id, $sku, $price, $quantity);
-                            }
-
-                            $this->cartModel->clearCart($user_id, session_id());
-                            unset($_SESSION['order_items']);
-
-                            $this->mail->sendMailSuccess($email, $name, $order_id, $amount);
-
-                            // Gửi email chi tiết nếu cần
-                            // $this->mail->sendMail($email, $emailSubject, $emailBody);
-
-                            BladeServiceProvider::render("order_success", [
-                                'message' => 'Giao dịch thành công!',
-                                'order_id' => $order_id,
-                                'total_price' => $amount
-                            ], "Order Success");
-                        } else {
-                            BladeServiceProvider::render("order_errors", [
-                                'message' => 'Không tìm thấy thông tin sản phẩm trong giỏ hàng.'
-                            ], "Order Error");
+                    // Thêm sản phẩm vào đơn hàng
+                    if (isset($_SESSION['order_items']) && !empty($_SESSION['order_items'])) {
+                        $order_items = $_SESSION['order_items'];
+                        foreach ($order_items as $item) {
+                            $sku = $item['sku'];
+                            $price = $item['price'];
+                            $quantity = $item['quantity'];
+                            $this->orderModel->addOrderItem($order_id, $sku, $price, $quantity);
                         }
+
+                        // Xóa giỏ hàng sau khi tạo đơn hàng
+                        $this->cartModel->clearCart($user_id, session_id());
+                        unset($_SESSION['order_items']); // Xóa sản phẩm trong giỏ hàng sau khi hoàn tất thanh toán
+
+                        // Gửi email thông báo thanh toán thành công
+                        $this->mail->sendMailSuccess($email, $name, $order_id, $amount);
+
+                        // Render trang thành công
+                        BladeServiceProvider::render("order_success", [
+                            'message' => 'Giao dịch thành công!',
+                            'order_id' => $order_id,
+                            'total_price' => $amount
+                        ], "Order Success");
                     } else {
                         BladeServiceProvider::render("order_errors", [
-                            'message' => 'Không thể lưu đơn hàng vào cơ sở dữ liệu.'
+                            'message' => 'Không tìm thấy thông tin sản phẩm trong giỏ hàng.'
                         ], "Order Error");
                     }
                 } else {
                     BladeServiceProvider::render("order_errors", [
-                        'message' => 'Không tìm thấy thông tin đơn hàng.'
+                        'message' => 'Không thể lưu đơn hàng vào cơ sở dữ liệu.'
                     ], "Order Error");
                 }
             } else {
                 BladeServiceProvider::render("order_errors", [
-                    'message' => 'Giao dịch không thành công.'
+                    'message' => 'Không tìm thấy thông tin đơn hàng.'
                 ], "Order Error");
             }
         } else {
             BladeServiceProvider::render("order_errors", [
-                'message' => 'Chữ ký không hợp lệ!'
+                'message' => 'Giao dịch không thành công.'
             ], "Order Error");
         }
+    } else {
+        BladeServiceProvider::render("order_errors", [
+            'message' => 'Chữ ký không hợp lệ!'
+        ], "Order Error");
     }
+}
+
 }
