@@ -169,4 +169,54 @@ class OrderModel
 
         return $orderItems;
     }
+
+    // Thống kê đơn hàng
+    public function getSuccessfulOrders()
+    {
+        $query = "SELECT COUNT(o.id) AS total_successful_orders, SUM(o.total_price) AS total_revenue
+              FROM orders o
+              WHERE o.payment_status = 'completed'";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getFailedOrders()
+    {
+        $query = "SELECT COUNT(o.id) AS total_failed_orders, SUM(o.total_price) AS total_revenue
+              FROM orders o
+              WHERE o.payment_status = 'failed'";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // chart doanh thu
+    public function getWeeklyRevenue()
+    {
+        $query = "SELECT WEEK(o.created_at) AS week, SUM(o.total_price) AS total_revenue
+              FROM orders o
+              WHERE YEAR(o.created_at) = YEAR(CURRENT_DATE)
+              GROUP BY WEEK(o.created_at)
+              ORDER BY week";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getEarningsForYear()
+    {
+        $query = "SELECT MONTH(o.created_at) AS month, SUM(o.total_price) AS total_revenue
+              FROM orders o
+              WHERE YEAR(o.created_at) = YEAR(CURRENT_DATE)
+              GROUP BY MONTH(o.created_at)
+              ORDER BY month";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -12,14 +12,14 @@ class CartModel
     }
 
     public function getCart($user_id, $session_id)
-{
-    if (!empty($user_id)) {
-        $condition = "carts.user_id = :user_id";
-    } else {
-        $condition = "carts.cart_session = :cart_session";
-    }
+    {
+        if (!empty($user_id)) {
+            $condition = "carts.user_id = :user_id";
+        } else {
+            $condition = "carts.cart_session = :cart_session";
+        }
 
-    $query = "SELECT carts.*, 
+        $query = "SELECT carts.*, 
                      products.name, 
                      products.image,
                      products_variants.id AS product_variant_id, -- Add product_variant_id
@@ -32,17 +32,17 @@ class CartModel
               INNER JOIN colors ON products_variants.color_id = colors.id
               WHERE $condition";
 
-    $stmt = $this->conn->prepare($query);
+        $stmt = $this->conn->prepare($query);
 
-    if (!empty($user_id)) {
-        $stmt->bindParam(':user_id', $user_id);
-    } else {
-        $stmt->bindParam(':cart_session', $session_id);
+        if (!empty($user_id)) {
+            $stmt->bindParam(':user_id', $user_id);
+        } else {
+            $stmt->bindParam(':cart_session', $session_id);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
 
 
@@ -121,5 +121,16 @@ class CartModel
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         return $stmt->execute();
+    }
+
+    public function getCartItemById($cart_id, $user_id, $session_id)
+    {
+        $query = "SELECT sku FROM carts WHERE id = :cart_id AND (user_id = :user_id OR cart_session = :cart_session)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':cart_id', $cart_id, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindParam(':cart_session', $session_id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

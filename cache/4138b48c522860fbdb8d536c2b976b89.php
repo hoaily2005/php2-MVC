@@ -150,6 +150,15 @@
                             </ul>
                         </li>
                         <li class="nav-item">
+                            <a href="/admin/coupons" class="nav-link dropdown-toggle" id="productDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Mã giảm giá
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="productDropdown">
+                                <li><a class="dropdown-item" href="/admin/coupons">Danh sách mã giảm giá</a></li>
+                                <li><a class="dropdown-item" href="/admin/coupons/create">Thêm mã giảm giá</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
                             <a href="/admin/orders" class="nav-link dropdown-toggle" id="productDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Đơn Hàng
                             </a>

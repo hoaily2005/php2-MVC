@@ -1,5 +1,6 @@
 <?php
 require_once "model/UserModel.php";
+require_once "model/AddressModel.php";
 require_once "mail/mailler.php";
 require_once "view/helpers.php";
 require_once './vendor/autoload.php';
@@ -14,10 +15,12 @@ class AuthController
 {
     private $UserModel;
     private $googleClient;
+    private $addressModel;
 
     public function __construct()
     {
         $this->UserModel = new UserModel();
+        $this->addressModel = new AddressModel();
 
         $this->googleClient = new Google_Client();
         $this->googleClient->setClientId($_ENV['GOOGLE_CLIENT_ID']);
@@ -262,8 +265,20 @@ class AuthController
 
     public function show($id)
     {
+        // Get user details
         $user = $this->UserModel->getUserById($id);
-        BladeServiceProvider::render("profile/index", compact('user'), "User Details");
+        
+        if (!$user) {
+            $_SESSION['error'] = "Không tìm thấy người dùng.";
+            header('Location: /');
+            exit;
+        }
+
+        // Get all addresses for this user
+        $addresses = $this->addressModel->getAllAddress($id);
+
+        // Render the Blade template with user and addresses
+        BladeServiceProvider::render("profile/index", compact('user', 'addresses'), "User Details");
     }
 
 

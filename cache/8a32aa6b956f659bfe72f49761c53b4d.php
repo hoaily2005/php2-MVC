@@ -27,7 +27,19 @@
                             <input type="radio" name="price" value="1000000-2000000" <?php echo e(isset($_GET['price']) && $_GET['price'] == '1000000-2000000' ? 'checked' : ''); ?>> 1TR - 2Tr<br>
                             <input type="radio" name="price" value="2000000-" <?php echo e(isset($_GET['price']) && $_GET['price'] == '2000000-' ? 'checked' : ''); ?>> Trên 2TR<br>
                         </div>
-                    
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Sắp xếp theo:</label><br>
+                            <select name="sort" class="form-control">
+                                <option value="newest" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'newest' ? 'selected' : ''); ?>>Mới nhất</option>
+                                <option value="oldest" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'oldest' ? 'selected' : ''); ?>>Cũ nhất</option>
+                                <option value="name_asc" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'name_asc' ? 'selected' : ''); ?>>A-Z</option>
+                                <option value="name_desc" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'name_desc' ? 'selected' : ''); ?>>Z-A</option>
+                                <option value="price_asc" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'price_asc' ? 'selected' : ''); ?>>Giá thấp -> cao</option>
+                                <option value="price_desc" <?php echo e(isset($_GET['sort']) && $_GET['sort'] == 'price_desc' ? 'selected' : ''); ?>>Giá cao -> thấp</option>
+                            </select>
+                        </div>
+                        
                         <input type="submit" value="Lọc" class="btn btn-primary w-100">
                     </form>
                     

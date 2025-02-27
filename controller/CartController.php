@@ -89,30 +89,60 @@ class CartController
     public function update()
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            session_start();
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
             $user_id = $_SESSION['users']['id'] ?? null;
             $cart_session = session_id();
             $cart_id = $_POST['cart_id'] ?? null;
             $quantity = $_POST['quantity'] ?? null;
 
-            if ($quantity > 0) {
-                $success = $this->cartModel->updateCart($user_id, $cart_session, $cart_id, $quantity);
+            if (!$cart_id || !is_numeric($quantity)) {
+                $_SESSION['errors'] = "Thông tin không hợp lệ.";
+                header("Location: /carts");
+                exit();
+            }
 
-                if ($success) {
-                    $_SESSION['success'] = "Cập nhật giỏ hàng thành công!";
-                } else {
-                    $_SESSION['errors'] = "Có lỗi xảy ra khi cập nhật giỏ hàng.";
-                }
-            } else {
+            if ($quantity <= 0) {
                 $_SESSION['errors'] = "Số lượng phải lớn hơn 0.";
+                header("Location: /carts");
+                exit();
+            }
+
+            $cart_item = $this->cartModel->getCartItemById($cart_id, $user_id, $cart_session);
+            if (!$cart_item) {
+                $_SESSION['errors'] = "Không tìm thấy sản phẩm trong giỏ hàng.";
+                header("Location: /carts");
+                exit();
+            }
+
+            $sku = $cart_item['sku'];
+
+            $available_quantity = $this->productVariantModel->getStock($sku);
+            if ($available_quantity === null || $available_quantity === false) {
+                $_SESSION['errors'] = "Không thể kiểm tra số lượng kho cho sản phẩm (SKU: $sku).";
+                header("Location: /carts");
+                exit();
+            }
+
+            if ($quantity > $available_quantity) {
+                $_SESSION['errors'] = "Số lượng yêu cầu ($quantity) vượt quá số lượng trong kho ($available_quantity).";
+                header("Location: /carts");
+                exit();
+            }
+            $success = $this->cartModel->updateCart($user_id, $cart_session, $cart_id, $quantity);
+
+            if ($success) {
+                $_SESSION['success'] = "Cập nhật giỏ hàng thành công!";
+            } else {
+                $_SESSION['errors'] = "Có lỗi xảy ra khi cập nhật giỏ hàng.";
             }
 
             header("Location: /carts");
             exit();
         }
     }
-
-
 
     public function delete($id)
     {
@@ -148,5 +178,4 @@ class CartController
         header("Location: /carts");
         exit();
     }
-   
 }

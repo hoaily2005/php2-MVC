@@ -52,10 +52,10 @@ class ProductModel
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':price', $price);
-        $stmt->bindParam(':image', $image);  
+        $stmt->bindParam(':image', $image);
         $stmt->bindParam(':quantity', $quantity);
         $stmt->bindParam(':category_id', $category_id);
-        return $stmt->execute();  
+        return $stmt->execute();
     }
     //lấy danh mụcmục
     public function getAllCategories()
@@ -81,7 +81,7 @@ class ProductModel
         $stmt->bindParam(':product_id', $productId);
         return $stmt->execute();
     }
-    
+
     public function addProductImage($productId, $imageUrl, $isMain)
     {
         $query = "INSERT INTO product_images (product_id, image_url, is_main) VALUES (:product_id, :image_url, :is_main)";
@@ -99,8 +99,8 @@ class ProductModel
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
-    
-    public function getProductsFitter($categoryId, $priceRange)
+
+    public function getProductsFitter($categoryId, $priceRange, $sort)
     {
         $query = "SELECT * FROM products WHERE 1";
 
@@ -117,11 +117,36 @@ class ProductModel
             }
         }
 
+        switch ($sort) {
+            case 'name_asc':
+                $query .= " ORDER BY name ASC";
+                break;
+            case 'name_desc':
+                $query .= " ORDER BY name DESC";
+                break;
+            case 'price_asc':
+                $query .= " ORDER BY price ASC";
+                break;
+            case 'price_desc':
+                $query .= " ORDER BY price DESC";
+                break;
+            case 'newest':
+                $query .= " ORDER BY created_at DESC";
+                break;
+            case 'oldest':
+                $query .= " ORDER BY created_at ASC";
+                break;
+            default:
+                $query .= " ORDER BY created_at DESC";
+                break;
+        }
+
         $stmt = $this->conn->prepare($query);
 
         if ($categoryId) {
             $stmt->bindParam(':category_id', $categoryId);
         }
+
         if ($priceRange) {
             $priceParts = explode('-', $priceRange);
             if (count($priceParts) == 2) {
@@ -136,5 +161,44 @@ class ProductModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getSuggestions($query)
+    {
+        $query = "%" . $query . "%";
+        $sql = "SELECT * FROM products WHERE name LIKE :query LIMIT 5";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':query', $query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getBestSellingProducts()
+    {
+        $query = "SELECT p.name, SUM(oi.quantity) AS total_sold, SUM(oi.total_price) AS revenue
+              FROM order_items oi
+              INNER JOIN products_variants pv ON oi.product_variant_id = pv.id
+              INNER JOIN products p ON pv.product_id = p.id
+              GROUP BY p.name
+              ORDER BY total_sold DESC
+              LIMIT 3"; 
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLeastSellingProducts()
+    {
+        $query = "SELECT p.name, SUM(oi.quantity) AS total_sold, SUM(oi.total_price) AS revenue
+              FROM order_items oi
+              INNER JOIN products_variants pv ON oi.product_variant_id = pv.id
+              INNER JOIN products p ON pv.product_id = p.id
+              GROUP BY p.name
+              ORDER BY total_sold ASC
+              LIMIT 3"; 
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
 }
